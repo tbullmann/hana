@@ -1,31 +1,16 @@
-from itertools import product
-from matplotlib import pyplot as plt
-import numpy as np
-from mio import load_neurites, load_positions
-from plot_network import set_axis_hidens, plot_neuron_points, plot_neuron_id, highlight_connection
-from plot_network import plot_network
-import pickle
 import logging
+import pickle
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+from hana.matlab import load_neurites, load_positions
+from hana.plotting import plot_axon, plot_dendrite, plot_neuron_pair
+from hana.structure import find_overlap, all_overlaps
+from plotting import plot_network
+from plotting import set_axis_hidens, plot_neuron_points, plot_neuron_id, highlight_connection
+
 logging.basicConfig(level=logging.DEBUG)
-
-
-
-cm_axon = plt.cm.ScalarMappable(cmap=plt.cm.summer, norm=plt.Normalize(vmin=0, vmax=2))
-cm_dendrite = plt.cm.ScalarMappable(cmap=plt.cm.gray_r, norm=plt.Normalize(vmin=0, vmax=50))
-
-
-def plot_neurite(ax, cm, z, pos, alpha=1, thr=0):
-    index = np.isfinite(z) & np.greater(z,thr)
-    x = pos.x[index]
-    y = pos.y[index]
-    c = cm.to_rgba(z[index])
-    ax.scatter(x, y, 18, c, marker='h', edgecolor='none', alpha=alpha)
-
-def plot_axon(ax, pos, z):
-    plot_neurite(ax, cm_axon, z, pos)
-
-def plot_dendrite(ax, pos, z, thr=10):
-    plot_neurite(ax, cm_dendrite, z, pos, alpha=0.8, thr=thr)
 
 
 def test():
@@ -70,7 +55,7 @@ def test_plot_all_axonal_fields():
     pos = load_positions('data/hidens_electrodes.mat')
     for neuron in axon_delay :
         ax=plt.subplot(111)
-        plot_axon(ax,pos,axon_delay[neuron])
+        plot_axon(ax, pos, axon_delay[neuron])
         set_axis_hidens(ax,pos)
         ax.set_title ('axon for neuron %d' % neuron)
         plt.show()
@@ -83,7 +68,7 @@ def test_plot_all_dendritic_fields(presynaptic_neuron):
     for postsynaptic_neuron in dendrite_peak :
         ax=plt.subplot(111)
         plot_axon(ax, pos, axon_delay[presynaptic_neuron])
-        plot_dendrite(ax,pos,dendrite_peak[postsynaptic_neuron])
+        plot_dendrite(ax, pos, dendrite_peak[postsynaptic_neuron])
         set_axis_hidens(ax,pos)
         ax.set_title ('axon for neuron %d, dendrite for neuron %d' % (presynaptic_neuron, postsynaptic_neuron))
         plt.show()
@@ -122,51 +107,12 @@ def test_estimate_overlap():
     ax1.set_title ('neuron pair %d $\longrightarrow$ %d' % (presynaptic_neuron, postsynaptic_neuron))
 
     ax2 = plt.subplot(122)
-    all_ratio, all_delay = all_overlaps(axon_delay,dendrite_peak)
+    all_ratio, all_delay = all_overlaps(axon_delay, dendrite_peak)
     plot_network (ax2, all_delay, pos)
     set_axis_hidens(ax2,pos)
     ax2.set_title ('structural connectivity graph')
     plt.show()
 
-
-def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron, thr_peak=10, thr_overlap=0.10):
-    delay = np.nan
-    overlap_ratio = np.nan
-    axon_field = np.greater(axon_delay[presynaptic_neuron], 0)
-    dendritic_field = np.greater(dendrite_peak[postsynaptic_neuron], thr_peak)
-    overlap = np.logical_and(axon_field, dendritic_field)
-    dendrite_size = sum(dendritic_field)
-    if dendrite_size > 0:
-        overlap_size = sum(overlap)
-        overlap_ratio = float(overlap_size) / dendrite_size
-        if thr_overlap < overlap_ratio:
-            delay = np.mean(axon_delay[presynaptic_neuron][overlap])
-            logging.debug('overlap = %1.2f with mean delay = %1.1f [ms]' % (overlap_ratio, delay))
-        else:
-            logging.debug('overlap = %1.2f too small, no delay assigned' % overlap_ratio)
-    return overlap_ratio, delay
-
-
-def all_overlaps (axon_delay, dendrite_peak, thr_peak=10, thr_overlap=0.10):
-    """Compute overlaps"""
-    all_overlap_ratios, all_axonal_delays = [], []
-    for pair in product(axon_delay, repeat=2):
-        presynaptic_neuron, postsynaptic_neuron = pair
-        if presynaptic_neuron<>postsynaptic_neuron:
-            logging.debug('neuron %d -> neuron %d:' % pair)
-            ratio, delay = find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron,
-                                        thr_peak=thr_peak, thr_overlap=thr_overlap)
-            if np.isfinite(delay):
-                all_overlap_ratios.append((pair, ratio))
-                all_axonal_delays.append((pair, delay))
-    return dict(all_overlap_ratios), dict(all_axonal_delays)
-
-
-def plot_neuron_pair(ax, pos, axon_delay, dendrite_peak, delay, postsynaptic_neuron, presynaptic_neuron):
-    plot_axon(ax, pos, axon_delay[presynaptic_neuron])
-    plot_dendrite(ax, pos, dendrite_peak[postsynaptic_neuron])
-    highlight_connection(ax, (presynaptic_neuron, postsynaptic_neuron), pos,
-                         annotation_text=' %1.1f ms' % delay)
 
 def figure10_prepare_data():
     axon_delay, dendrite_peak = load_neurites ('data/hidens2018at35C_arbors.mat')
@@ -197,9 +143,9 @@ def figure10_prepare_data():
     print 'Saved data'
 
 
-
-# test_plot_all_axonal_fields()
-# test_plot_all_dendritic_fields(3606)
-# test_plot_overlap()
-# test_estimate_overlap()
-figure10_prepare_data()
+# test()
+test_plot_all_axonal_fields()
+test_plot_all_dendritic_fields(3606)
+test_plot_overlap() # plots examplary overlap between axon and dendrite
+test_estimate_overlap()  # figure 6
+# figure10_prepare_data()

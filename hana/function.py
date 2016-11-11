@@ -1,4 +1,3 @@
-"""Func provides functional connectivity"""
 from itertools import product, groupby
 import numpy as np
 import logging
@@ -27,7 +26,7 @@ def sawtooth(timeseries, dtype = np.float32):
 
 def timelag_by_sawtooth (timeseries1, timeseries2):
     """Returns for each event in the first time series the time lags for the event in the second time series
-    that precedes, succeeds. Both time series must be sorted in increasing values. Faster than using the for loop"""
+    that precedes, succeeds. Both time series must be sorted in increasing values. Faster than timelag_by_for_loop."""
     preceding_time_lags = - np.interp(np.flipud(-timeseries1), *sawtooth(-np.flipud(timeseries2)), left=np.nan, right=np.nan)
     succeeding_time_lags = np.interp(timeseries1, *sawtooth(timeseries2), left=np.nan, right=np.nan)
     time_lags =  np.sort(np.hstack([preceding_time_lags, succeeding_time_lags]))
@@ -61,7 +60,7 @@ def randomize_intervals_by_swapping (timeseries, factor):
 
 def randomize_intervals_by_gaussian (timeseries, factor):
     """Randomize timeseries by assuming indicies make a random walk with (+factor,-factor) of equal probability.
-    Much faster than the old one."""
+    Much faster than randomize_intervals_by_swapping."""
     gaps = np.diff(timeseries)
     length = len(gaps)
     new_positions = range(length) + np.random.normal(0, factor, length)
@@ -119,6 +118,7 @@ def find_peaks (x, y, thr=0):
     try: y_max, x_max, x_start, y_start = zip(*((max(v), x[i[np.argmax(v)]], x[i[0]], x[i[-1]]) for (i, v) in pieces))
     except: y_max, x_max, x_start, y_start = (), (), (), ()  # nothing above threshold
     return np.array(y_max), np.array(x_max), np.array(x_start), np.array(y_start)
+
 
 def all_peaks (timelags, std_score_dict, thr=10, direction='both'):
     """Compute peaks"""

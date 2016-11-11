@@ -1,15 +1,20 @@
 import pickle
+from itertools import chain
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from func import timeseries_to_surrogates, all_timelag_standardscore, timelag_by_for_loop, timelag_by_sawtooth, \
+from function import timeseries_to_surrogates, all_timelag_standardscore, timelag_by_for_loop, timelag_by_sawtooth, \
     timelag_hist, timelag, randomize_intervals_by_swapping, randomize_intervals_by_gaussian, surrogate_timeseries, \
     timelag_standardscore, find_peaks, all_peaks, swap_intervals
-from mio import load_events, events_to_timeseries, load_positions
-from plot_network import set_axis_hidens, unique_neurons, plot_neuron_id, plot_neuron_points, plot_network, \
+from matlab import load_events, events_to_timeseries, load_positions
+from plotting import set_axis_hidens, plot_neuron_id, plot_neuron_points, plot_network, \
     highlight_connection, plot_pair_func, plot_std_score_and_peaks, plot_timeseries_hist_and_surrogates
 
+
+def unique_neurons(pair_dict):
+    neuron_set = set(list(chain(*list(pair_dict.keys()))))
+    return neuron_set
 
 def test_swap_intervals ():
     timeseries = np.array([1,2,4,5,7,8,10])
@@ -167,13 +172,12 @@ def plot_func_example_and_network(pre, post, direction, thr, pos, std_score_dict
     if peak is not None: highlight_connection(ax1, (pre, post), pos)
     set_axis_hidens(ax1, pos)
 
-
-# test_timelag (5)
-# test_timelag_hist(10000)
-# test_randomize_intervals(10)
-# test_surrogates(1000)
-# test_on_data1()
+test_swap_intervals()
+test_timelag (5)
+test_timelag_hist(10000)
+test_randomize_intervals(10)
+test_surrogates(1000)
+# # test_on_data1()
 # test_on_data2()
 # test_on_data3()
-
 
