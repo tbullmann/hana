@@ -22,7 +22,7 @@ def filter(timeseries, axonal_delays, synaptic_delay=0.001, jitter=0.001):
     connected_events = []
     for pre, post in axonal_delays:
         time_lag = (axonal_delays[pre, post])/1000 + synaptic_delay  # axonal delays in ms -> events in s
-        logging.info("Finding spike pairs %d -> %d with predicted spike time lag %f ms:" % (pre, post, time_lag))
+        logging.info("Finding spike pairs %d -> %d with predicted spike time lag %f s:" % (pre, post, time_lag))
 
         _pre = pre-1     # Indicies for neurons in events starting at 0, in delays from 1 (!)
         _post = post-1   # TODO: Fix this BIG BUG!
