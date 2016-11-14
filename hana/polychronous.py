@@ -15,18 +15,18 @@ def filter(timeseries, axonal_delays, synaptic_delay=0.001, jitter=0.001):
     post synaptic spikes that match timing within a jitter form pairs of pre- and post-synaptic events, which could
     be the result of a synaptic transmission. See Izhekevich, 2006 for further explanation.
     :param timeseries: dict of neuron_id: vector of time
-    :param axonal_delays: dict of (pre_neuron_id, post_neuron_id): axonal_delay
-    :param synaptic_delay: single value
-    :param jitter: single value, representing maximum allowed synaptic jitter (+/-)
+    :param axonal_delays: dict of (pre_neuron_id, post_neuron_id): axonal_delay in ms(!)
+    :param synaptic_delay: single value, in s(!)
+    :param jitter: single value, representing maximum allowed synaptic jitter (+/-), in s(!)
     :return: connected_events: tupels (time, pre_neuron_id), (time, post_neuron_id)
     """
-    # TODO: Improve function description
+    # TODO: Improve function description, remove unit inconsistencies (ms vs. s)
     # Note: for testing: 9861 -> 10964 with predicted spike time lag 1.266667 ms: 93(candidate) pairs
     connected_events = []
     neuron_set = unique_neurons(axonal_delays)
     for pre, post in product(neuron_set, repeat=2):
         if (pre, post) in axonal_delays:
-            time_lag = (axonal_delays[pre, post] + synaptic_delay)/1000  # axonal delays in ms -> events in s
+            time_lag = (axonal_delays[pre, post])/1000 + synaptic_delay  # axonal delays in ms -> events in s
             logging.info("Finding spike pairs %d -> %d with predicted spike time lag %f ms:" % (pre, post, time_lag))
 
             _pre = pre-1     # Indicies for neurons in events starting at 0, in delays from 1 (!)
@@ -36,7 +36,7 @@ def filter(timeseries, axonal_delays, synaptic_delay=0.001, jitter=0.001):
                 presynaptic_spikes = timeseries[_pre]
                 shifted_presynaptic_spikes = presynaptic_spikes+time_lag
                 postsynaptic_spikes = timeseries[_post]
-                for offset in (0, 1):
+                for offset in (0, 1):  # checking postsynaptic spike before and after shifted presynaptic spike
                     position = (np.searchsorted(postsynaptic_spikes, shifted_presynaptic_spikes) - offset).\
                         clip(0, len(postsynaptic_spikes) - 1)
                     valid = np.abs(shifted_presynaptic_spikes - postsynaptic_spikes[position]) < jitter
@@ -70,7 +70,7 @@ def plot(graph_of_connected_events):
     :param graph_of_connected_events: see polychronous.combine
     """
     nx.draw_networkx(graph_of_connected_events,
-                     pos = {event:event for event in graph_of_connected_events.nodes()},
+                     pos={event: event for event in graph_of_connected_events.nodes()},
                      with_labels=False,
                      node_size=50,
                      node_color='black',
