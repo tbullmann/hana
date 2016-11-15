@@ -24,13 +24,10 @@ def filter(timeseries, axonal_delays, synaptic_delay=0.001, jitter=0.001):
         time_lag = (axonal_delays[pre, post])/1000 + synaptic_delay  # axonal delays in ms -> events in s
         logging.info("Finding spike pairs %d -> %d with predicted spike time lag %f s:" % (pre, post, time_lag))
 
-        _pre = pre-1     # Indicies for neurons in events starting at 0, in delays from 1 (!)
-        _post = post-1   # TODO: Fix this BIG BUG!
-
-        if (_pre in timeseries) and (_post in timeseries):
-            presynaptic_spikes = timeseries[_pre]
+        if (pre in timeseries) and (post in timeseries):
+            presynaptic_spikes = timeseries[pre]
             shifted_presynaptic_spikes = presynaptic_spikes+time_lag
-            postsynaptic_spikes = timeseries[_post]
+            postsynaptic_spikes = timeseries[post]
             for offset in (0, 1):  # checking postsynaptic spike before and after shifted presynaptic spike
                 position = (np.searchsorted(postsynaptic_spikes, shifted_presynaptic_spikes) - offset).\
                     clip(0, len(postsynaptic_spikes) - 1)
