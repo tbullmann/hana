@@ -1,6 +1,8 @@
-""""MIO provides HDMEA data import / output functions"""
 import numpy as np
 import scipy.io as sio
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 def load_events(filename):
     """Loads spiking events from matlab file with frame(=20000*ts) and neuron index in all_events"""
@@ -15,7 +17,7 @@ def events_to_timeseries(events):
     """Converts events consisting of tupels (time, neuron) to a dictonary with neuron as key and timeseries as value"""
     times, neurons = zip(*events)
     unique_neurons = np.unique(neurons)
-    print "uniques neurons: ", unique_neurons
+    logging.info("uniques neurons: ", unique_neurons)
     timeseries = dict([(neuron, np.array(times)[neurons == neuron]) for neuron in unique_neurons])
     return timeseries
 
@@ -31,10 +33,19 @@ def load_neurites(filename):
     """Loads delay map into dictionary"""
     data = sio.loadmat(filename)["arbors"]
     delay = {}
-    positivep_peak = {}
+    positive_peak = {}
     for record in data[0]:
         delay[record[0][0][0][0][0]] = record[0][0][1][0]
-        positivep_peak[record[0][0][0][0][0]] = record[0][0][2][0]
-    return delay, positivep_peak
+        positive_peak[record[0][0][0][0][0]] = record[0][0][2][0]
+
+    # Indicies for neurons in events starting at 0, in delays and positive peak from 1 (!)
+    # TODO: Fix this BIG BUG in the matlab export script (?) and delete the quick fix below
+    delay = {key-1:value for key, value in delay.items()}
+    positive_peak = {key-1:value for key, value in positive_peak.items()}
+
+    logging.info("Delays: ", delay)
+
+
+    return delay, positive_peak
 
 
