@@ -63,7 +63,7 @@ def plot(graph_of_connected_events):
     nx.draw_networkx(graph_of_connected_events,
                      pos={event: event for event in graph_of_connected_events.nodes()},
                      with_labels=False,
-                     node_size=50,
+                     node_size=20,
                      node_color='black',
                      edge_color='red')
     plt.xlabel("time [s]")
