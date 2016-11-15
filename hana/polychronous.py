@@ -18,7 +18,6 @@ def filter(timeseries, axonal_delays, synaptic_delay=0.001, jitter=0.001):
     :return: connected_events: tupels (time, pre_neuron_id), (time, post_neuron_id)
     """
     # TODO: Improve function description, remove unit inconsistencies (ms vs. s)
-    # Note: for testing: 9861 -> 10964 with predicted spike time lag 1.266667 ms: 93(candidate) pairs
     connected_events = []
     for pre, post in axonal_delays:
         time_lag = (axonal_delays[pre, post])/1000 + synaptic_delay  # axonal delays in ms -> events in s
@@ -81,3 +80,14 @@ def group(graph_of_connected_events):
     return list_of_polychronous_groups
 
 
+def shuffle_keys(dictionary):
+    """
+    Preparing surrogate data for polychronous.filter.
+    Note: Does not change the network edge connectivity distribution.
+    :param dictionary: could be either a time series or delays dictionary
+    :return: dictionary with the shuffled correspondence of keys to values
+    """
+    keys = dictionary.keys()
+    shuffled_keys = random.shuffle(keys)
+    new_dictionary = dict(zip(shuffled_keys, dictionary.values()))
+    return new_dictionary
