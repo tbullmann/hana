@@ -3,6 +3,10 @@ import networkx as nx
 from matplotlib import pyplot as plt
 
 import logging
+
+from hana.misc import unique_neurons
+from hana.plotting import plot_neuron_points, plot_network, highlight_connection, set_axis_hidens
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -91,3 +95,51 @@ def shuffle_keys(dictionary):
     shuffled_keys = random.shuffle(keys)
     new_dictionary = dict(zip(shuffled_keys, dictionary.values()))
     return new_dictionary
+
+
+def plot_pcg(ax, polychronous_group, color='r'):
+    """
+    Plots a polychronous group with colored arrows. Unfortunately, (re)plotting is slow for large groups.
+    :param ax: axis handle
+    :param polychronous_group: graph containing the events and connections of a polychronous group
+    :param color: color of arrows, default is red
+    :return:
+    """
+    times, neurons = (zip(*polychronous_group.nodes()))
+    ax.plot(times, neurons, '.k', markersize=10)
+    for ((time1, neuron1), (time2, neuron2)) in polychronous_group.edges():
+        if time2 < time1: time1, neuron1, time2, neuron2 = time2, neuron2, time1, neuron1
+        ax.annotate('', (time1, neuron1), (time2, neuron2), arrowprops={'color': color, 'arrowstyle': '<-'})
+    # Annotations coordinates are opposite to what expected!
+    # Annotations alone do not resize the plotting windows, do:
+    # ax.set_xlim([min(times), max(times)])
+    # ax.set_ylim([min(neurons), max(neurons)])
+    plt.xlabel("time [s]")
+    plt.ylabel("neuron index")
+
+def plot_pcg_on_network(ax, polychronous_group, delays, pos):
+    """
+    Plots a polychronous group onto a structural network. Unfortunately, (re)plotting is slow for large groups.
+    :param ax: axis handle
+    :param polychronous_group: graph containing the events and connections of a polychronous group
+    :param delays: delays between neurons (structural network)
+    :param pos: positions of the neurons on the multi electrode array
+    """
+    plot_neuron_points(ax, unique_neurons(delays), pos)
+    plot_network(ax, delays, pos, color='gray')
+    for i, ((time1, neuron1), (time2, neuron2)) in enumerate(polychronous_group.edges(), start=1):
+        if time2 < time1: time1, neuron1, time2, neuron2 = time2, neuron2, time1, neuron1
+        highlight_connection(ax, (neuron1, neuron2), pos)
+    set_axis_hidens(ax, pos)
+
+
+def plot_pcgs(ax, list_of_polychronous_groups):
+    """
+    Plots each polychronous group with different (arrow) colors. (Re)Plotting is painfully slow.
+    :param ax: axis handle
+    :param list_of_polychronous_groups: list of polychronous groups
+    """
+    from itertools import cycle
+    cycol = cycle('bgrcmk').next
+    for g in list_of_polychronous_groups:
+        plot_pcg(ax, g, color=cycol())
