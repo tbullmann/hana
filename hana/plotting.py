@@ -29,9 +29,9 @@ def plot_neuron_points(ax, neuron_dict, pos):
         ax.scatter(pos.x[neuron], pos.y[neuron], s=18, marker='o', color='k')
 
 
-def plot_network(ax, pair_dict, pos):
+def plot_network(ax, pair_dict, pos, color='k'):
     for (pre, post) in pair_dict:
-        ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]), arrowprops={'arrowstyle': '<-'})
+        ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]), arrowprops={'arrowstyle': '<-', 'color':color})
 
 
 def highlight_connection (ax, neuron_pair, pos, annotation_text=None):
