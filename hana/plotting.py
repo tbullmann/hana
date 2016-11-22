@@ -17,6 +17,11 @@ def set_axis_hidens(ax, pos):
     ax.set_ylabel(r'y [$\mu$m]')
 
 
+def annotate_x_bar(domain, y, text='', color = 'r', linewidth = 2):
+    plt.hlines(y, *domain)
+    plt.annotate('', (min(domain), y), (max(domain), y), arrowprops={'arrowstyle': '|-|', 'color': color, 'shrinkA':  0, 'shrinkB': 0, 'linewidth': linewidth})
+
+
 # Plotting networks
 
 def plot_neuron_id(ax, neuron_dict, pos):
@@ -108,5 +113,4 @@ def plot_neuron_pair(ax, pos, axon_delay, dendrite_peak, delay, postsynaptic_neu
     plot_dendrite(ax, pos, dendrite_peak[postsynaptic_neuron])
     highlight_connection(ax, (presynaptic_neuron, postsynaptic_neuron), pos,
                          annotation_text=' %1.1f ms' % delay)
-
 
