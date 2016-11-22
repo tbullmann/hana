@@ -1,14 +1,17 @@
+from hana.plotting import annotate_x_bar
+
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import interpolate
 
-from publication.plotting import annotate_x_bar
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def half_peak_width(x, y): return np.diff(half_peak_domain(x, y))
 
 
-def half_peak_domain(x, y, negative_peak=True, plot=True):
+def half_peak_domain(x, y, negative_peak=True, plot=False):
     """
     Finding the half peak domain (for calculation of the half peak width) using B-spline interpolation.
     Note: Assuming the baseline is 0.
@@ -29,7 +32,7 @@ def half_peak_domain(x, y, negative_peak=True, plot=True):
     domain = list(roots[range(index_roots-1,index_roots+1)])
 
     if plot:
-        print ('Peak at %f, with halfwidth domain %f ~ %f' % (x_peak, min(domain), max(domain)))
+        logging.info ('Peak at %f, with halfwidth domain %f ~ %f' % (x_peak, min(domain), max(domain)))
         xnew = np.arange(min(x), max(x), step=min(np.diff(x))/5)
         ynew = interpolate.splev(xnew, spline_representation)
         plt.plot(x, y, 'x', xnew, ynew, 'b-')
@@ -42,7 +45,7 @@ def half_peak_domain(x, y, negative_peak=True, plot=True):
 def peak_peak_width(x, y): return np.diff(peak_peak_domain(x, y))
 
 
-def peak_peak_domain(x, y, plot=True):
+def peak_peak_domain(x, y, plot=False):
     index_neg_peak = np.argmin(y)
     index_pos_peak = index_neg_peak + np.argmax(y[index_neg_peak:len(x)])  # The positive after the negative peak
     x_neg_peak = x[index_neg_peak]
@@ -50,7 +53,7 @@ def peak_peak_domain(x, y, plot=True):
     domain = [x_neg_peak, y_pos_peak]
 
     if plot:
-        print ('Negative peak at %f and positive peak at %f' % (min(domain), max(domain)))
+        logging.info ('Negative peak at %f and positive peak at %f' % (min(domain), max(domain)))
         plt.plot(x, y, 'x:', )
         annotate_x_bar(domain, (max(y) + min(y)) / 2)
         plt.show()
