@@ -17,9 +17,10 @@ def set_axis_hidens(ax, pos):
     ax.set_ylabel(r'y [$\mu$m]')
 
 
-def annotate_x_bar(domain, y, text='', color = 'r', linewidth = 2):
+def annotate_x_bar(domain, y, text='', color = 'r'):
     plt.hlines(y, *domain)
-    plt.annotate('', (min(domain), y), (max(domain), y), arrowprops={'arrowstyle': '|-|', 'color': color, 'shrinkA':  0, 'shrinkB': 0, 'linewidth': linewidth})
+    plt.annotate('', (min(domain), y), (max(domain), y), arrowprops={'arrowstyle': '|-|', 'color': color, 'shrinkA':  0, 'shrinkB': 0})
+    if text: plt.text(max(domain),y, text, verticalalignment='center')
 
 
 # Plotting networks
