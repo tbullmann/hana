@@ -15,6 +15,7 @@ def set_axis_hidens(ax, pos):
     ax.set_ylim([min(pos.y) - margin, max(pos.y) + margin])
     ax.set_xlabel(r'x [$\mu$m]')
     ax.set_ylabel(r'y [$\mu$m]')
+    ax.invert_yaxis()
 
 
 def annotate_x_bar(domain, y, text='', color = 'r'):
