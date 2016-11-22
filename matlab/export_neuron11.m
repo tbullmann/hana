@@ -12,6 +12,10 @@ x = neurons{neuron_index}.x;
 y = neurons{neuron_index}.y;
 distances = distn([x' y']',[x' y']');
 V = neurons{neuron_index}.mean ;trigger_el_idx = Neuron2Electrode ( NeuronTable, neuron_index);
+V = interpolate_stack ( x, y, V );   % nan electrodes interpolieren
+V = bsxfun(@minus,V,median(V));      % subtract median for each electrode
+
+
 pre = 80;
 post = 80;
 sampling_frequency = 20000;
