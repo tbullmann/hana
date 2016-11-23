@@ -8,6 +8,11 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
+MAXIMUM_NEIGHBORS = 7 # sanity check: there are 7 electrodes within 20um on hidens
+NEIGHBORHOOD_RADIUS = 20 # neighboring electrodes within 20um
+DELAY_EPSILON = 0.050  # resolution for threshold
+
+
 def half_peak_width(x, y): return np.diff(half_peak_domain(x, y))
 
 
@@ -59,3 +64,4 @@ def peak_peak_domain(x, y, plot=False):
         plt.show()
 
     return domain
+
