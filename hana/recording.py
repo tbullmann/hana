@@ -65,3 +65,6 @@ def peak_peak_domain(x, y, plot=False):
 
     return domain
 
+
+def neighborhood(neighbors, index):
+    return np.where(neighbors[index])
