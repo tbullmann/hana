@@ -10,11 +10,10 @@
 pre = 80;
 post = 80;
 sampling_frequency = 20000;
-time = (-pre:post)/sampling_frequency;
+t = (-pre:post)/sampling_frequency;
 
-% filename_format = '~/icloud/data/hdmea/neuron%d.h5'; % directly
 filename_format = '/Users/tbullmann/Desktop/export/neuron%d.h5';
-for neuron_index = 56:length(neurons)
+for neuron_index = 1:length(neurons)
     filename = sprintf(filename_format, neuron_index);
     x = neurons{neuron_index}.x;
     y = neurons{neuron_index}.y;
@@ -24,7 +23,7 @@ for neuron_index = 56:length(neurons)
      try
         V = interpolate_stack ( x, y, V );  % nan electrodes interpolieren
         V = bsxfun(@minus,V,median(V));  % subtract for each electrode
-        hdf5write(filename, '/V',V, '/time',time/1000, '/x',x, '/y',y ,...
+        hdf5write(filename, '/V',V, '/t',t, '/x',x, '/y',y ,...
             '/trigger',trigger_el_idx-1, '/neuron',neuron_index)
         fprintf('Saved %s \n', filename);
      catch
