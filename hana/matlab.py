@@ -62,7 +62,7 @@ def load_traces(filename):
     """
     file = h5py.File(filename, 'r')
     V = get_variable(file, 'V')
-    t = get_variable(file, 'time')
+    t = get_variable(file, 't')
     x = get_variable(file, 'x')
     y = get_variable(file, 'y')
     trigger = get_variable(file, 'trigger')
