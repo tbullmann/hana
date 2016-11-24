@@ -72,7 +72,48 @@ def neighborhood(neighbors, index):
     return np.where(neighbors[index])
 
 
-def __segment_axon(V, t, neighbors):
+# Dendrite segmentation
+
+def __segment_dendrite(t, V, neighbors):
+    """
+    Verbose segment dendrite function for figures.
+    :param V:
+    :param t:
+    :param neighbors:
+    :return: all internal variables
+    """
+    delay = find_peaks(V, t, negative_peaks=False)   # detect positive peaks
+    index_AIS = find_AIS(V)
+    mean_delay, std_delay = neighborhood_statistics(delay, neighbors)
+    expected_std_delay = mean_std_for_random_delays(delay)
+
+    thr = find_valley(std_delay, expected_std_delay)
+    valid_delay = std_delay < thr
+
+    V_AIS = V[index_AIS]
+    min_delay, max_delay = half_peak_domain(t, V_AIS)
+    return_current_delay = np.logical_and(mean_delay > min_delay, mean_delay < max_delay)
+
+    dendrite = np.multiply(return_current_delay, valid_delay)
+
+    return delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, return_current_delay, dendrite
+
+
+def segment_dendrite(t, V, neighbors):
+    """
+    Verbose segment dendrite function for figures.
+    :param V:
+    :param t:
+    :param neighbors:
+    :return: all internal variables
+    """
+    delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, \
+        return_current_delay, dendrite = __segment_dendrite(t, V, neighbors)
+    return dendrite
+
+# Axon segmentation
+
+def __segment_axon(t, V, neighbors):
     """
     Verbose segment axon function for figures.
     :param V:
@@ -91,7 +132,7 @@ def __segment_axon(V, t, neighbors):
     return delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, positive_delay, axon
 
 
-def segment_axon(V, t, neighbors):
+def segment_axon(t, V, neighbors):
     """
     Verbose segment axon function for figures.
     :param V:
@@ -99,7 +140,7 @@ def segment_axon(V, t, neighbors):
     :param neighbors:
     :return: all internal variables
     """
-    _, mean_delay, _, _, _, _, _, _, axon = __segment_axon(V, t, neighbors)
+    _, mean_delay, _, _, _, _, _, _, axon = __segment_axon(t, V, neighbors)
     delay = axonal_delay(axon, mean_delay)
     return delay
 
@@ -115,6 +156,18 @@ def axonal_delay(axon, mean_delay):
     delay[np.where(np.logical_not(axon))] = np.NAN
     return delay
 
+
+def find_AIS(V):
+    """
+    Electrode with most minimal V corresponding to (proximal) AIS
+    :param V: recorded traces
+    :return: electrode_index: index of the electrode near to the AIS
+    """
+    electrode_AIS = np.unravel_index(np.argmin(V), V.shape)[0]
+    return electrode_AIS
+
+
+# Signal detection using neighboring electrodes
 
 def find_valley(std_delay, expected_std_delay):
     # Find valley between peak for axons and peak for random peak at expected_std_delay
@@ -138,16 +191,6 @@ def neighborhood_statistics(delay, neighbors):
     var_delay = np.divide(np.dot(np.power(diff_delay, 2), neighbors), sum_neighbors)
     std_delay = np.sqrt(var_delay)
     return mean_delay, std_delay
-
-
-def find_AIS(V):
-    """
-    Electrode with most minimal V corresponding to (proximal) AIS
-    :param V: recorded traces
-    :return: electrode_index: index of the electrode near to the AIS
-    """
-    electrode_AIS = np.unravel_index(np.argmin(V), V.shape)[0]
-    return electrode_AIS
 
 
 def find_peaks(V, t, negative_peaks=True):
