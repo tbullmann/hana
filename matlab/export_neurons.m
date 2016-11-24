@@ -12,8 +12,9 @@ post = 80;
 sampling_frequency = 20000;
 time = (-pre:post)/sampling_frequency;
 
+% filename_format = '~/icloud/data/hdmea/neuron%d.h5'; % directly
 filename_format = '/Users/tbullmann/Desktop/export/neuron%d.h5';
-for neuron_index = 1:length(neurons)
+for neuron_index = 56:length(neurons)
     filename = sprintf(filename_format, neuron_index);
     x = neurons{neuron_index}.x;
     y = neurons{neuron_index}.y;
