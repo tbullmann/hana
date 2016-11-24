@@ -18,9 +18,10 @@ def set_axis_hidens(ax, pos):
     ax.invert_yaxis()
 
 
-def annotate_x_bar(domain, y, text='', color = 'r'):
+def annotate_x_bar(domain, y, text='', color = 'r', arrowstyle='|-|'):
     plt.hlines(y, *domain)
-    plt.annotate('', (min(domain), y), (max(domain), y), arrowprops={'arrowstyle': '|-|', 'color': color, 'shrinkA':  0, 'shrinkB': 0})
+    plt.annotate('', (max(domain), y), (min(domain), y),   # for annotations it's the other way round
+                 arrowprops={'arrowstyle': arrowstyle, 'color': color, 'shrinkA':  0, 'shrinkB': 0})
     if text: plt.text(max(domain),y, text, verticalalignment='center')
 
 
