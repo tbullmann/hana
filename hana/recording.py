@@ -109,7 +109,9 @@ def segment_dendrite(t, V, neighbors):
     """
     delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, \
         return_current_delay, dendrite = __segment_dendrite(t, V, neighbors)
-    return dendrite
+    positive_voltage = np.max(V, axis=1)
+    dendrite_return_current = restrict_to_compartment(positive_voltage, dendrite)
+    return dendrite_return_current
 
 # Axon segmentation
 
@@ -141,19 +143,19 @@ def segment_axon(t, V, neighbors):
     :return: all internal variables
     """
     _, mean_delay, _, _, _, _, _, _, axon = __segment_axon(t, V, neighbors)
-    delay = axonal_delay(axon, mean_delay)
+    delay = restrict_to_compartment(mean_delay, axon)
     return delay
 
 
-def axonal_delay(axon, mean_delay):
+def restrict_to_compartment(measurement, compartment):
     """
     Return mean_delay for axon, NaN otherwise.
-    :param axon: boolean array
-    :param mean_delay: array
+    :param compartment: boolean array
+    :param measurement: array
     :return: delay: array
     """
-    delay = mean_delay
-    delay[np.where(np.logical_not(axon))] = np.NAN
+    delay = measurement
+    delay[np.where(np.logical_not(compartment))] = np.NAN
     return delay
 
 
