@@ -7,10 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
-from hana.matlab import load_positions, load_traces
-from hana.recording import electrode_neighborhoods, find_AIS, segment_axon, segment_dendrite
-from publication.plotting import FIGURE_ELECTRODES_FILE, FIGURE_NEURON_FILE_FORMAT
-
+from hana.recording import electrode_neighborhoods, find_AIS, segment_axon, segment_dendrite, load_traces, load_positions, HIDENS_ELECTRODES_FILE
 
 def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron, thr_peak=10, thr_overlap=0.10):
     delay = np.nan
@@ -45,10 +42,10 @@ def all_overlaps (axon_delay, dendrite_peak, thr_peak=10, thr_overlap=0.10):
     return dict(all_overlap_ratios), dict(all_axonal_delays)
 
 
-def extract_all_compartments(neurons):
+def extract_all_compartments(neurons, template):
 
     # Load electrode coordinates and calculate neighborhood
-    pos = load_positions(FIGURE_ELECTRODES_FILE)
+    pos = load_positions(HIDENS_ELECTRODES_FILE)
     neighbors = electrode_neighborhoods(pos)
 
     # Initialize dictionaries
@@ -60,7 +57,7 @@ def extract_all_compartments(neurons):
 
     for neuron in neurons:
         # Load  data
-        V, t, x, y, trigger, _ = load_traces(FIGURE_NEURON_FILE_FORMAT % (neuron))
+        V, t, x, y, trigger, _ = load_traces(template % (neuron))
         t *= 1000  # convert to ms
 
         axon, dendrite, axonal_delay, dendrite_return_current, index_AIS, number_axon_electrodes, \
@@ -110,7 +107,7 @@ def get_neurons_from_template(template):
 
 def extract_neurites (template, filename):
     neurons = get_neurons_from_template(template)
-    all_triggers, all_AIS, all_axonal_delays, all_dendritic_return_currents =  extract_all_compartments(neurons)
+    all_triggers, all_AIS, all_axonal_delays, all_dendritic_return_currents =  extract_all_compartments(neurons, template)
 
     data = {'neurons': np.array(neurons),
             'triggers': all_triggers,
@@ -128,11 +125,9 @@ def extract_neurites (template, filename):
     logging.info('Saved the neurites of %d neurons to file %s :' % (len(neurons), filename))
 
 
-def load_neurites(filename):
-    """Loads delay map into dictionary"""
+def load_compartments(filename):
+    """Loads compartments into dictionary"""
     data = load_dict_from_hdf5(filename)
-    # delay = data['axonal_delays']
-    # positive_peak = data['dendritic_return_currents']
     triggers = data['triggers']
     AIS = data['AIS']
     delays = data['axonal_delays']
@@ -140,6 +135,27 @@ def load_neurites(filename):
     return triggers, AIS, delays, positive_peak
 
 
+def load_neurites(filename):
+    """Loads only neurites: axons and dendrites"""
+    triggers, AIS, delays, positive_peak = load_compartments(filename)
+    return delays, positive_peak
+
+
+
 MIN_DENDRITE_ELECTRODES = 0  #TODO: Maybe at least one electrode
 MIN_AXON_ELECTRODES = 7  #TODO: Maybe at least one neighborhood
 MAX_AXON_ELECTRODES = 5000  #TODO: Maybe over 50% of all electrodes is a good cutoff
+
+
+def neuron_position_from_trigger_electrode(pos, trigger):
+    """Use position of trigger electrode as position of neuron"""
+    import numpy as np
+    max_neuron = max(trigger.keys())
+    x = np.zeros(max_neuron+1)
+    y = np.zeros(max_neuron+1)
+    for neuron in trigger:
+        trigger_electrode = int(trigger[int(neuron)])
+        x[neuron] = pos.x[trigger_electrode]
+        y[neuron] = pos.y[trigger_electrode]
+    neuron_pos =  np.rec.fromarrays((x, y), dtype=[('x', 'f4'), ('y', 'f4')])
+    return neuron_pos

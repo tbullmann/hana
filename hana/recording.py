@@ -1,5 +1,7 @@
+import h5py
 from scipy.spatial.distance import squareform, pdist
 
+from hana.h5dict import load_dict_from_hdf5
 from hana.plotting import annotate_x_bar
 
 import numpy as np
@@ -10,6 +12,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
+HIDENS_ELECTRODES_FILE = 'data/hidens_electrodes.h5'
 MAXIMUM_NEIGHBORS = 7 # sanity check: there are 7 electrodes within 20um on hidens
 NEIGHBORHOOD_RADIUS = 20 # neighboring electrodes within 20um
 DELAY_EPSILON = 0.050  # resolution for threshold
@@ -220,3 +223,41 @@ def electrode_neighborhoods(pos):
     sum_neighbors = sum(neighbors)
     assert (max(sum_neighbors)) <= MAXIMUM_NEIGHBORS  # sanity check
     return neighbors
+
+
+def load_traces(filename):
+    """
+
+    :param filename: path and name of the hdf5 file
+    :return: V: recordings as an array with the shape electrodes x time
+    :return: t: time in s, or None
+    :return: x, y: coordinates of the recording electrodes
+    :return: trigger, neuron: index of recording electrode and corresponding neuron, if spike triggered averaging was
+    performed otherwise None
+    """
+    file = h5py.File(filename, 'r')
+    V = get_variable(file, 'V')
+    t = get_variable(file, 't')
+    x = get_variable(file, 'x')
+    y = get_variable(file, 'y')
+    trigger = get_variable(file, 'trigger')
+    neuron = get_variable(file, 'neuron')
+    logging.info('Load file %s with variables %s' % (filename, file.keys()))
+    return V, t, x, y, trigger, neuron
+
+
+def get_variable(file, key): return np.array(file[key] if key in file.keys() else None)
+
+
+def load_timeseries(filename):
+    """Load time series as a dictionary indexed by neuron from hdf5 file"""
+    # TODO: Move load_timeseries and structure.load_traces to hana.recording
+    timeseries = load_dict_from_hdf5(filename)
+    return timeseries
+
+
+def load_positions(hdf5_filename):
+    """Loads electrode positions"""
+    pos = load_dict_from_hdf5(hdf5_filename)
+    return np.rec.fromarrays((pos['x'], pos['y']), dtype=[('x', 'f4'), ('y', 'f4')])
+

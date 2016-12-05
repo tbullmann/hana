@@ -1,11 +1,12 @@
-import h5py
-import numpy as np
-import scipy.io as sio
 import logging
 
-from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
-from hana.structure import load_neurites
-from publication.plotting import FIGURE_ARBORS_FILE, FIGURE_EVENTS_FILE
+import numpy as np
+import scipy.io as sio
+
+from hana.h5dict import save_dict_to_hdf5
+from publication.plotting import FIGURE_ARBORS_FILE, FIGURE_EVENTS_FILE, FIGURE_ELECTRODES_MATFILE
+
+HIDENS_ELETRODES_FILE = 'data/hidens_electrodes.h5'
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -56,30 +57,6 @@ def load_neurites(filename):
     return delay, positive_peak
 
 
-def load_traces(filename):
-    """
-
-    :param filename: path and name of the hdf5 file
-    :return: V: recordings as an array with the shape electrodes x time
-    :return: t: time in s, or None
-    :return: x, y: coordinates of the recording electrodes
-    :return: trigger, neuron: index of recording electrode and corresponding neuron, if spike triggered averaging was
-    performed otherwise None
-    """
-    file = h5py.File(filename, 'r')
-    V = get_variable(file, 'V')
-    t = get_variable(file, 't')
-    x = get_variable(file, 'x')
-    y = get_variable(file, 'y')
-    trigger = get_variable(file, 'trigger')
-    neuron = get_variable(file, 'neuron')
-    logging.info('Load file %s with variables %s' % (filename, file.keys()))
-    return V, t, x, y, trigger, neuron
-
-
-def get_variable(file, key): return np.array(file[key] if key in file.keys() else None)
-
-
 def convert_matlab_events_to_hdf5_timeseries():
     """Convert events exported for trigger electrodes to timeseries indexed by neuron ID"""
     trigger_electrode, _, _, _ = load_neurites('../publication/' + FIGURE_ARBORS_FILE)
@@ -94,9 +71,7 @@ def convert_matlab_events_to_hdf5_timeseries():
     save_dict_to_hdf5(timeseries, '../publication/data/events.h5')
 
 
-def load_timeseries(filename):
-    """Load time series as a dictionary indexed by neuron from hdf5 file"""
-    # TODO: Move load_timeseries and structure.load_traces to hana.recording
-    timeseries = load_dict_from_hdf5(filename)
-    return timeseries
-
+def convert_matlab_positions_to_hdf5_positions(mat_filename=FIGURE_ELECTRODES_MATFILE, hdf5_filename=HIDENS_ELETRODES_FILE):
+    pos_named_tuple = load_positions(mat_filename)
+    pos = {'x':pos_named_tuple.x, 'y':pos_named_tuple.y}
+    save_dict_to_hdf5(pos, hdf5_filename)
