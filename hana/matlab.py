@@ -2,6 +2,11 @@ import h5py
 import numpy as np
 import scipy.io as sio
 import logging
+
+from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
+from hana.structure import load_neurites
+from publication.plotting import FIGURE_ARBORS_FILE, FIGURE_EVENTS_FILE
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -14,6 +19,7 @@ def load_events(filename):
     array.sort(order=['time'])
     return array
 
+
 def events_to_timeseries(events):
     """Converts events consisting of tupels (time, neuron) to a dictonary with neuron as key and timeseries as value"""
     times, neurons = zip(*events)
@@ -21,6 +27,7 @@ def events_to_timeseries(events):
     logging.info("uniques neurons: ", unique_neurons)
     timeseries = dict([(neuron, np.array(times)[neurons == neuron]) for neuron in unique_neurons])
     return timeseries
+
 
 def load_positions(filename):
     """Loads electrode positions"""
@@ -41,11 +48,10 @@ def load_neurites(filename):
 
     # Indicies for neurons in events starting at 0, in delays and positive peak from 1 (!)
     # TODO: Fix this BIG BUG in the matlab export script (?) and delete the quick fix below
-    delay = {key-1:value for key, value in delay.items()}
-    positive_peak = {key-1:value for key, value in positive_peak.items()}
+    delay = {key - 1: value for key, value in delay.items()}
+    positive_peak = {key - 1: value for key, value in positive_peak.items()}
 
     logging.info("Delays: ", delay)
-
 
     return delay, positive_peak
 
@@ -67,8 +73,30 @@ def load_traces(filename):
     y = get_variable(file, 'y')
     trigger = get_variable(file, 'trigger')
     neuron = get_variable(file, 'neuron')
-    logging.info ('Load file %s with variables %s' % (filename, file.keys()))
+    logging.info('Load file %s with variables %s' % (filename, file.keys()))
     return V, t, x, y, trigger, neuron
 
 
 def get_variable(file, key): return np.array(file[key] if key in file.keys() else None)
+
+
+def convert_matlab_events_to_hdf5_timeseries():
+    """Convert events exported for trigger electrodes to timeseries indexed by neuron ID"""
+    trigger_electrode, _, _, _ = load_neurites('../publication/' + FIGURE_ARBORS_FILE)
+    events = load_events('../publication/' + FIGURE_EVENTS_FILE)
+    timeseries = events_to_timeseries(events)
+    print (trigger_electrode.keys())
+    print (timeseries.keys())
+    # Maybe convert neuron, trigger_electrode from numpy array to int in but the problem goes back to
+    # extract_neurites --> structure.extract_all_compartments --> structure.load_traces --> matlab.load_traces so it shoudl
+    timeseries = {int(neuron): timeseries[int(trigger_electrode[int(neuron)])] for neuron in trigger_electrode.keys()}
+    print (timeseries.keys())
+    save_dict_to_hdf5(timeseries, '../publication/data/events.h5')
+
+
+def load_timeseries(filename):
+    """Load time series as a dictionary indexed by neuron from hdf5 file"""
+    # TODO: Move load_timeseries and structure.load_traces to hana.recording
+    timeseries = load_dict_from_hdf5(filename)
+    return timeseries
+

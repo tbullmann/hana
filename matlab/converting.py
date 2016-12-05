@@ -1,0 +1,4 @@
+from hana.matlab import convert_matlab_events_to_hdf5_timeseries
+
+convert_matlab_events_to_hdf5_timeseries()
+
