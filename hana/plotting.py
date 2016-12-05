@@ -110,9 +110,9 @@ def plot_dendrite(ax, pos, z, thr=10):
     plot_neurite(ax, cm_dendrite, z, pos, alpha=0.8, thr=thr)
 
 
-def plot_neuron_pair(ax, pos, axon_delay, dendrite_peak, delay, postsynaptic_neuron, presynaptic_neuron):
+def plot_neuron_pair(ax, pos, axon_delay, dendrite_peak, neuron_pos, postsynaptic_neuron, presynaptic_neuron, delay):
     plot_axon(ax, pos, axon_delay[presynaptic_neuron])
     plot_dendrite(ax, pos, dendrite_peak[postsynaptic_neuron])
-    highlight_connection(ax, (presynaptic_neuron, postsynaptic_neuron), pos,
+    highlight_connection(ax, (presynaptic_neuron, postsynaptic_neuron), neuron_pos,
                          annotation_text=' %1.1f ms' % delay)
 
