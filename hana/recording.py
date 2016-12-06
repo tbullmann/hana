@@ -90,12 +90,22 @@ def mean_std_for_random_delays(delay):
     return expected_std_delay
 
 
-def neighborhood_statistics(delay, neighbors):
+def neighborhood_statistics(delay, neighbors, ddof=1):
+    """
+    Calculates the mean and average squared deviation for a neighborhood around each electrode.
+    Note: The average squared deviation is normally calculated as x.sum() / N, where N = len(x). However, in standard
+    statistical practice, ddof=1 provides an unbiased estimator of the variance of the infinite population. See
+    documentation for numpy.std function.
+    :param delay:
+    :param neighbors:
+    :param ddof:
+    :return:
+    """
     # Calculate mean delay, and std_delay
     sum_neighbors = sum(neighbors)
     mean_delay = np.divide(np.dot(delay, neighbors), sum_neighbors)
     diff_delay = delay - mean_delay
-    var_delay = np.divide(np.dot(np.power(diff_delay, 2), neighbors), sum_neighbors)
+    var_delay = np.divide(np.dot(np.power(diff_delay, 2), neighbors), sum_neighbors - ddof)
     std_delay = np.sqrt(var_delay)
     return mean_delay, std_delay
 
