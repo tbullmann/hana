@@ -1,13 +1,14 @@
+import logging
+
+import h5py
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy import interpolate
+from scipy.spatial.distance import squareform, pdist
+
 from hana.h5dict import load_dict_from_hdf5
 from hana.plotting import annotate_x_bar
 
-import numpy as np
-import h5py
-from scipy.spatial.distance import squareform, pdist
-from matplotlib import pyplot as plt
-from scipy import interpolate
-
-import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -72,103 +73,6 @@ def peak_peak_domain(x, y, plot=False):
 
 def neighborhood(neighbors, index):
     return np.where(neighbors[index])
-
-
-# Dendrite segmentation
-
-def __segment_dendrite(t, V, neighbors):
-    """
-    Verbose segment dendrite function for figures.
-    :param V:
-    :param t:
-    :param neighbors:
-    :return: all internal variables
-    """
-    delay = find_peaks(V, t, negative_peaks=False)   # detect positive peaks
-    index_AIS = find_AIS(V)
-    mean_delay, std_delay = neighborhood_statistics(delay, neighbors)
-    expected_std_delay = mean_std_for_random_delays(delay)
-
-    thr = find_valley(std_delay, expected_std_delay)
-    valid_delay = std_delay < thr
-
-    V_AIS = V[index_AIS]
-    min_delay, max_delay = half_peak_domain(t, V_AIS)
-    return_current_delay = np.logical_and(mean_delay > min_delay, mean_delay < max_delay)
-
-    dendrite = np.multiply(return_current_delay, valid_delay)
-
-    return delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, return_current_delay, dendrite
-
-
-def segment_dendrite(t, V, neighbors):
-    """
-    Verbose segment dendrite function for figures.
-    :param V:
-    :param t:
-    :param neighbors:
-    :return: all internal variables
-    """
-    delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, \
-        return_current_delay, dendrite = __segment_dendrite(t, V, neighbors)
-    positive_voltage = np.max(V, axis=1)
-    dendrite_return_current = restrict_to_compartment(positive_voltage, dendrite)
-    return dendrite_return_current
-
-# Axon segmentation
-
-def __segment_axon(t, V, neighbors):
-    """
-    Verbose segment axon function for figures.
-    :param V:
-    :param t:
-    :param neighbors:
-    :return: all internal variables
-    """
-    delay = find_peaks(V, t)
-    index_AIS = find_AIS(V)
-    mean_delay, std_delay = neighborhood_statistics(delay, neighbors)
-    expected_std_delay = mean_std_for_random_delays(delay)
-    thr = find_valley(std_delay, expected_std_delay)
-    valid_delay = std_delay < thr
-    positive_delay = mean_delay > delay[index_AIS]
-    axon = np.multiply(positive_delay, valid_delay)
-    return delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, positive_delay, axon
-
-
-def segment_axon(t, V, neighbors):
-    """
-    Verbose segment axon function for figures.
-    :param V:
-    :param t:
-    :param neighbors:
-    :return: all internal variables
-    """
-    _, mean_delay, _, _, _, _, _, _, axon = __segment_axon(t, V, neighbors)
-    delay = restrict_to_compartment(mean_delay, axon)
-    return delay
-
-
-def restrict_to_compartment(measurement, compartment):
-    """
-    Return mean_delay for axon, NaN otherwise.
-    :param compartment: boolean array
-    :param measurement: array
-    :return: delay: array
-    """
-    delay = measurement
-    delay[np.where(np.logical_not(compartment))] = np.NAN
-    return delay
-
-
-def find_AIS(V):
-    """
-    Electrode with most minimal V corresponding to (proximal) AIS
-    :param V: recorded traces
-    :return: electrode_index: index of the electrode near to the AIS
-    """
-    electrode_AIS = np.unravel_index(np.argmin(V), V.shape)[0]
-    return electrode_AIS
 
 
 # Signal detection using neighboring electrodes
