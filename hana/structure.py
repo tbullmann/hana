@@ -4,8 +4,6 @@ from itertools import product
 import numpy as np
 
 
-# Structural connectivity from the overlap of axonal and dendritic compartments
-
 def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron, thr_peak=10, thr_overlap=0.10):
     delay = np.nan
     overlap_ratio = np.nan

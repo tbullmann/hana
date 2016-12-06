@@ -1,19 +1,18 @@
-import logging
-from os import path, listdir
-from re import compile
-
-import numpy as np
-
 from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
 from hana.recording import load_positions, HIDENS_ELECTRODES_FILE, electrode_neighborhoods, load_traces, find_peaks, \
     neighborhood_statistics, mean_std_for_random_delays, find_valley, half_peak_domain
+
+from os import path, listdir
+from re import compile
+import numpy as np
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 MIN_DENDRITE_ELECTRODES = 0  # The dendrite signal should be seen at least on one electrode
 MIN_AXON_ELECTRODES = 7  # The axon should cover at least one neighborhood of electrodes
 MAX_AXON_ELECTRODES = 5000  # Not more than half of all electrodes could be a neuron
 
-
-# Compartments for each neuron from the extracellular signals
 
 def extract_all_compartments(neurons, template):
     """

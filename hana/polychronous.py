@@ -1,12 +1,11 @@
+from hana.misc import unique_neurons
+from hana.plotting import plot_neuron_points, plot_network, highlight_connection, set_axis_hidens
+
 import numpy as np
 import networkx as nx
 from matplotlib import pyplot as plt
 
 import logging
-
-from hana.misc import unique_neurons
-from hana.plotting import plot_neuron_points, plot_network, highlight_connection, set_axis_hidens
-
 logging.basicConfig(level=logging.DEBUG)
 
 

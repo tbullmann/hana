@@ -1,8 +1,8 @@
 # (C) http://codereview.stackexchange.com/users/27783/hpaulj
 # http://codereview.stackexchange.com/questions/120802/recursively-save-python-dictionaries-to-hdf5-files-using-h5py
 #
-# The original implementation does not accept other items than strings as key, such integers used for neuron indices,
-# but this could be helped by adding an automatic conversion.
+# The original implementation does not accept other items than strings as key, such integers used for neuron indices.
+# By adding an automatic conversion (functions maybe_*) it is possible to store and retrieve such keys as well.
 
 import numpy as np
 import h5py

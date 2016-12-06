@@ -1,14 +1,13 @@
-import logging
-
-import numpy as np
-import scipy.io as sio
-
 from hana.h5dict import save_dict_to_hdf5
 from publication.plotting import FIGURE_ARBORS_FILE, FIGURE_EVENTS_FILE, FIGURE_ELECTRODES_MATFILE
 
-HIDENS_ELETRODES_FILE = 'data/hidens_electrodes.h5'
-
+import numpy as np
+import scipy.io as sio
+import logging
 logging.basicConfig(level=logging.DEBUG)
+
+
+HIDENS_ELETRODES_FILE = 'data/hidens_electrodes.h5'
 
 
 def load_events(filename):

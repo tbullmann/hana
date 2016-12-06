@@ -1,4 +1,5 @@
-import logging
+from hana.h5dict import load_dict_from_hdf5
+from hana.plotting import annotate_x_bar
 
 import h5py
 import numpy as np
@@ -6,9 +7,7 @@ from matplotlib import pyplot as plt
 from scipy import interpolate
 from scipy.spatial.distance import squareform, pdist
 
-from hana.h5dict import load_dict_from_hdf5
-from hana.plotting import annotate_x_bar
-
+import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
