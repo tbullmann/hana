@@ -1,10 +1,9 @@
-import h5py
-from scipy.spatial.distance import squareform, pdist
-
 from hana.h5dict import load_dict_from_hdf5
 from hana.plotting import annotate_x_bar
 
 import numpy as np
+import h5py
+from scipy.spatial.distance import squareform, pdist
 from matplotlib import pyplot as plt
 from scipy import interpolate
 
@@ -42,7 +41,7 @@ def half_peak_domain(x, y, negative_peak=True, plot=False):
     domain = list(roots[range(index_roots-1,index_roots+1)])
 
     if plot:
-        logging.info ('Peak at %f, with halfwidth domain %f ~ %f' % (x_peak, min(domain), max(domain)))
+        logging.info ('Peak at %f, with half width domain %f ~ %f' % (x_peak, min(domain), max(domain)))
         xnew = np.arange(min(x), max(x), step=min(np.diff(x))/5)
         ynew = interpolate.splev(xnew, spline_representation)
         plt.plot(x, y, 'x', xnew, ynew, 'b-')
@@ -227,7 +226,7 @@ def electrode_neighborhoods(pos):
 
 def load_traces(filename):
     """
-
+    Load traces for each electrode of the spike triggered average for a single neuron from a hdf5 file.
     :param filename: path and name of the hdf5 file
     :return: V: recordings as an array with the shape electrodes x time
     :return: t: time in s, or None
@@ -251,7 +250,6 @@ def get_variable(file, key): return np.array(file[key] if key in file.keys() els
 
 def load_timeseries(filename):
     """Load time series as a dictionary indexed by neuron from hdf5 file"""
-    # TODO: Move load_timeseries and structure.load_traces to hana.recording
     timeseries = load_dict_from_hdf5(filename)
     return timeseries
 

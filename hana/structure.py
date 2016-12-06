@@ -4,10 +4,12 @@ from os import path, listdir
 from re import compile
 
 import numpy as np
-from matplotlib import pyplot as plt
 
 from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
 from hana.recording import electrode_neighborhoods, find_AIS, segment_axon, segment_dendrite, load_traces, load_positions, HIDENS_ELECTRODES_FILE
+
+
+# Structural connectivity from the overlap of axonal and dendritic compartments
 
 def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron, thr_peak=10, thr_overlap=0.10):
     delay = np.nan
@@ -42,7 +44,20 @@ def all_overlaps (axon_delay, dendrite_peak, thr_peak=10, thr_overlap=0.10):
     return dict(all_overlap_ratios), dict(all_axonal_delays)
 
 
+# Compartments for each neuron from the extracellular signals
+
+MIN_DENDRITE_ELECTRODES = 0  # The dendrite signal should be seen at least on one electrode
+MIN_AXON_ELECTRODES = 7  # The axon should cover at least one neighborhood of electrodes
+MAX_AXON_ELECTRODES = 5000  # Not more than half of all electrodes could be a neuron
+
+
 def extract_all_compartments(neurons, template):
+    """
+    Read the specified neurons from the files and extract their compartments.
+    :param neurons: list of neuron indicies.
+    :param template: input filename with format string for the indexing, e.g. 'data/neuron%d.h5'
+    :return:
+    """
 
     # Load electrode coordinates and calculate neighborhood
     pos = load_positions(HIDENS_ELECTRODES_FILE)
@@ -74,7 +89,6 @@ def extract_all_compartments(neurons, template):
         else:
             logging.info('No axonal and dendritic compartment(s).')
 
-    plt.show()
     logging.info('Neurons with axonal and dendritic arbors:')
     logging.info(extracted_neurons)
 
@@ -82,7 +96,12 @@ def extract_all_compartments(neurons, template):
 
 
 def extract_compartments(t, V, neighbors):
-    # Segment axon and dendrite
+    """
+    Segment AIS, axon and dendrite of a single neuron from the traces of the spike triggered average.
+    :param t: time in ms
+    :param V: traces for each electrode
+    :param neighbors: adjacency matrix of the electrodes
+    """
     index_AIS = find_AIS(V)
     axonal_delay = segment_axon(t, V, neighbors)
     axon = np.isfinite(axonal_delay)
@@ -96,7 +115,7 @@ def extract_compartments(t, V, neighbors):
 
 
 def get_neurons_from_template(template):
-    """Get all neuron indices for the files that match the template string 'data/neuron%d.h5'."""
+    """Get all neuron indices for the files that match the template string, e.g. 'data/neuron%d.h5'."""
     neurons = []
     path_to_files, file_template = path.split(template)
     for formatted in listdir(path_to_files):
@@ -105,7 +124,14 @@ def get_neurons_from_template(template):
     return neurons
 
 
-def extract_neurites (template, filename):
+def extract_and_save_compartments(template, filename):
+    """
+    Read spike triggered averages for each neurons from the files matching the template, extract the compartments
+    and save the result in a single file.
+    :param template: input filename with format string for the indexing, e.g. 'data/neuron%d.h5'
+    :param filename: output filename, e.g. 'temp/all_neurites.h5'
+    :return:
+    """
     neurons = get_neurons_from_template(template)
     all_triggers, all_AIS, all_axonal_delays, all_dendritic_return_currents =  extract_all_compartments(neurons, template)
 
@@ -116,13 +142,8 @@ def extract_neurites (template, filename):
             'dendritic_return_currents':all_dendritic_return_currents }
     save_dict_to_hdf5(data, filename)
 
-    logging.info('Saved the following variables to file %s :' % filename)
-    logging.info(data.keys())
-
-    # pickle.dump((all_triggers, all_AIS, all_axonal_delays, all_dendritic_return_currents),
-    #             open(filename,'wb'))
-
     logging.info('Saved the neurites of %d neurons to file %s :' % (len(neurons), filename))
+    logging.info(data.keys())
 
 
 def load_compartments(filename):
@@ -136,15 +157,11 @@ def load_compartments(filename):
 
 
 def load_neurites(filename):
-    """Loads only neurites: axons and dendrites"""
+    """Loads only neurites: axons and dendrites
+    :param filename: filename for file exported by extract_and_save_compartments, e.g. 'temp/all_neurites.h5'
+    """
     triggers, AIS, delays, positive_peak = load_compartments(filename)
     return delays, positive_peak
-
-
-
-MIN_DENDRITE_ELECTRODES = 0  #TODO: Maybe at least one electrode
-MIN_AXON_ELECTRODES = 7  #TODO: Maybe at least one neighborhood
-MAX_AXON_ELECTRODES = 5000  #TODO: Maybe over 50% of all electrodes is a good cutoff
 
 
 def neuron_position_from_trigger_electrode(pos, trigger):

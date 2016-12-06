@@ -8,9 +8,6 @@ import numpy as np
 import h5py
 
 def save_dict_to_hdf5(dic, filename):
-    """
-    ....
-    """
     with h5py.File(filename, 'w') as h5file:
         recursively_save_dict_contents_to_group(h5file, '/', dic)
 
@@ -21,9 +18,6 @@ def maybe_convert_to_int(key):
     return int(key) if key.isdigit() else key
 
 def recursively_save_dict_contents_to_group(h5file, path, dic):
-    """
-    ....
-    """
     for key, item in dic.items():
         if isinstance(item, (np.ndarray, np.int64, np.float64, str, bytes)):
             h5file[path + maybe_convert_to_string(key)] = item
@@ -33,16 +27,10 @@ def recursively_save_dict_contents_to_group(h5file, path, dic):
             raise ValueError('Cannot save %s type'%type(item))
 
 def load_dict_from_hdf5(filename):
-    """
-    ....
-    """
     with h5py.File(filename, 'r') as h5file:
         return recursively_load_dict_contents_from_group(h5file, '/')
 
 def recursively_load_dict_contents_from_group(h5file, path):
-    """
-    ....
-    """
     ans = {}
     for key, item in h5file[path].items():
         if isinstance(item, h5py._hl.dataset.Dataset):
@@ -53,13 +41,13 @@ def recursively_load_dict_contents_from_group(h5file, path):
 
 if __name__ == '__main__':
 
-    data = {'1': 'astring',
+    data = {'1': 'anumber',
             'y': np.arange(10),
             'd': {'z': np.ones((2,3)),
                   'b': b'bytestring'}}
     print(data)
     filename = 'test.h5'
     save_dict_to_hdf5(data, filename)
-    dd = load_dict_from_hdf5(filename)
-    print(dd)
+    reloaded_data = load_dict_from_hdf5(filename)
+    print(reloaded_data)
     # should test for bad type

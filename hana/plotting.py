@@ -26,14 +26,14 @@ def annotate_x_bar(domain, y, text='', color = 'r', arrowstyle='|-|'):
 
 # Plotting networks
 
-def plot_neuron_id(ax, neuron_dict, pos):
+def plot_neuron_id(ax, neuron_dict, neuron_pos):
     for neuron in neuron_dict:
-        ax.annotate(' %d' % neuron, (pos.x[neuron], pos.y[neuron]))
+        ax.annotate(' %d' % neuron, (neuron_pos.x[neuron], neuron_pos.y[neuron]))
 
 
-def plot_neuron_points(ax, neuron_dict, pos):
+def plot_neuron_points(ax, neuron_dict, neuron_pos):
     for neuron in neuron_dict:
-        ax.scatter(pos.x[neuron], pos.y[neuron], s=18, marker='o', color='k')
+        ax.scatter(neuron_pos.x[neuron], neuron_pos.y[neuron], s=18, marker='o', color='k')
 
 
 def plot_network(ax, pair_dict, pos, color='k'):
@@ -41,15 +41,15 @@ def plot_network(ax, pair_dict, pos, color='k'):
         ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]), arrowprops={'arrowstyle': '<-', 'color':color})
 
 
-def highlight_connection (ax, neuron_pair, pos, annotation_text=None):
+def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None):
     pre, post = neuron_pair
-    ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]),
+    ax.annotate('', (neuron_pos.x[pre], neuron_pos.y[pre]), (neuron_pos.x[post], neuron_pos.y[post]),
                 arrowprops={'arrowstyle': '<-', 'color':'r', 'linewidth':2})
-    ax.scatter(pos.x[pre], pos.y[pre], s=18, marker='o', color='r')
-    ax.scatter(pos.x[post], pos.y[post], s=18, marker='o', color='r')
+    ax.scatter(neuron_pos.x[pre], neuron_pos.y[pre], s=18, marker='o', color='r')
+    ax.scatter(neuron_pos.x[post], neuron_pos.y[post], s=18, marker='o', color='r')
     if annotation_text is not None:
-        x = np.mean((pos.x[pre],pos.x[post]))
-        y = np.mean((pos.y[pre],pos.y[post]))
+        x = np.mean((neuron_pos.x[pre], neuron_pos.x[post]))
+        y = np.mean((neuron_pos.y[pre], neuron_pos.y[post]))
         plt.text(x, y, annotation_text, color = 'r')
 
 
@@ -95,7 +95,7 @@ cm_dendrite = plt.cm.ScalarMappable(cmap=plt.cm.gray_r, norm=plt.Normalize(vmin=
 
 
 def plot_neurite(ax, cm, z, pos, alpha=1, thr=0):
-    index = np.isfinite(z) & np.greater(z,thr)
+    index = np.isfinite(z) & np.greater(z, thr)
     x = pos.x[index]
     y = pos.y[index]
     c = cm.to_rgba(z[index])
