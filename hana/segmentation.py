@@ -215,7 +215,7 @@ def segment_axon(t, V, neighbors):
 
 def restrict_to_compartment(measurement, compartment):
     """
-    Return mean_delay for axon, NaN otherwise.
+    Return measurement only if electrode recorded a valid signal from this compartment, NaN otherwise.
     :param compartment: boolean array
     :param measurement: array
     :return: delay: array
