@@ -162,3 +162,26 @@ def load_positions(hdf5_filename):
     pos = load_dict_from_hdf5(hdf5_filename)
     return np.rec.fromarrays((pos['x'], pos['y']), dtype=[('x', 'f4'), ('y', 'f4')])
 
+
+def interval_of_timeseries (timeseries):
+    first, last = [], []
+    for neuron in timeseries:
+        first.append (min(timeseries[neuron]))
+        last.append(max(timeseries[neuron]))
+    return min(first), max(last)
+
+
+def partial_timeseries (timeseries, interval=0.1):
+
+    begin, end = interval_of_timeseries(timeseries)
+
+    if interval is not tuple:
+        partial_begin, partial_end = (begin, (end-begin) * interval)
+    else:
+        partial_begin, partial_end = interval
+
+    for neuron in timeseries:
+        timeseries[neuron] = timeseries[neuron][np.logical_and(timeseries[neuron]>partial_begin,timeseries[neuron]<partial_end)]
+
+    logging.info('Partial timeseries spanning %d~%d [s] of total %d~%d [s]' % (partial_begin, partial_end, begin, end))
+    return timeseries
