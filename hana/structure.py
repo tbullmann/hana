@@ -19,20 +19,21 @@ def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neu
             logging.debug('overlap = %1.2f with mean delay = %1.1f [ms]' % (overlap_ratio, delay))
         else:
             logging.debug('overlap = %1.2f too small, no delay assigned' % overlap_ratio)
-    return overlap_ratio, delay
+    return overlap, overlap_ratio, delay
 
 
 def all_overlaps (axon_delay, dendrite_peak, thr_peak=10, thr_overlap=0.10):
     """Compute overlaps"""
-    all_overlap_ratios, all_axonal_delays = [], []
+    all_overlap, all_overlap_ratios, all_axonal_delays = [], [], []
     for pair in product(axon_delay, repeat=2):
         presynaptic_neuron, postsynaptic_neuron = pair
         if presynaptic_neuron<>postsynaptic_neuron:
             logging.debug('neuron %d -> neuron %d:' % pair)
-            ratio, delay = find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron,
+            overlap, ratio, delay = find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neuron,
                                         thr_peak=thr_peak, thr_overlap=thr_overlap)
             if np.isfinite(delay):
+                all_overlap.append((pair, overlap))
                 all_overlap_ratios.append((pair, ratio))
                 all_axonal_delays.append((pair, delay))
-    return dict(all_overlap_ratios), dict(all_axonal_delays)
+    return dict(all_overlap), dict(all_overlap_ratios), dict(all_axonal_delays)
 
