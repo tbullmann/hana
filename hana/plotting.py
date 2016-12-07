@@ -41,10 +41,11 @@ def plot_network(ax, pair_dict, pos, color='k'):
         ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]), arrowprops={'arrowstyle': '<-', 'color':color})
 
 
-def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None):
+def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None, connected=True):
     pre, post = neuron_pair
+    linestyle = '-' if connected else ':'
     ax.annotate('', (neuron_pos.x[pre], neuron_pos.y[pre]), (neuron_pos.x[post], neuron_pos.y[post]),
-                arrowprops={'arrowstyle': '<-', 'color':'r', 'linewidth':2})
+                arrowprops={'arrowstyle': '<-', 'linestyle': linestyle, 'color':'r', 'linewidth':2})
     ax.scatter(neuron_pos.x[pre], neuron_pos.y[pre], s=18, marker='o', color='r')
     ax.scatter(neuron_pos.x[post], neuron_pos.y[post], s=18, marker='o', color='r')
     if annotation_text is not None:
@@ -113,6 +114,8 @@ def plot_dendrite(ax, pos, z, thr=10):
 def plot_neuron_pair(ax, pos, axon_delay, dendrite_peak, neuron_pos, postsynaptic_neuron, presynaptic_neuron, delay):
     plot_axon(ax, pos, axon_delay[presynaptic_neuron])
     plot_dendrite(ax, pos, dendrite_peak[postsynaptic_neuron])
+    is_connected = True if np.isfinite(delay) else False
+    delay_as_text = ' %1.1f ms' % delay if np.isfinite(delay) else ' not connected!'
     highlight_connection(ax, (presynaptic_neuron, postsynaptic_neuron), neuron_pos,
-                         annotation_text=' %1.1f ms' % delay)
+                         annotation_text=delay_as_text, connected=is_connected)
 
