@@ -16,7 +16,7 @@ def set_axis_hidens(ax, margin=20):
     # print([min(pos.x) , max(pos.x) ])
     # print([min(pos.y) , max(pos.y) ])
     ax.set_xlim([175.5 - margin, 1908.9+ margin])
-    ax.set_xlim([98.123001-margin, 2096.123+margin])
+    ax.set_ylim([98.123001-margin, 2096.123+margin])
     ax.set_xlabel(r'x [$\mu$m]')
     ax.set_ylabel(r'y [$\mu$m]')
     ax.invert_yaxis()
