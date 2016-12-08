@@ -2,17 +2,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def set_axis_hidens(ax, pos):
+def set_axis_hidens(ax, margin=20):
     """
     Standard layout for the multi electrode array.
     :param ax: plots axis handle.
-    :param pos: positions of all electrodes.
+    :param margin: margin around electrodes
     :return: Noting.
     """
     ax.set_aspect('equal')
-    margin = 20
-    ax.set_xlim([min(pos.x) - margin, max(pos.x) + margin])
-    ax.set_ylim([min(pos.y) - margin, max(pos.y) + margin])
+    # previously the position of all electrodes was used:
+    # ax.set_xlim([min(pos.x) - margin, max(pos.x) + margin])
+    # ax.set_ylim([min(pos.y) - margin, max(pos.y) + margin])
+    # print([min(pos.x) , max(pos.x) ])
+    # print([min(pos.y) , max(pos.y) ])
+    ax.set_xlim([175.5 - margin, 1908.9+ margin])
+    ax.set_xlim([98.123001-margin, 2096.123+margin])
     ax.set_xlabel(r'x [$\mu$m]')
     ax.set_ylabel(r'y [$\mu$m]')
     ax.invert_yaxis()

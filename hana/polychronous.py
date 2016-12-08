@@ -129,7 +129,7 @@ def plot_pcg_on_network(ax, polychronous_group, delays, pos):
     for i, ((time1, neuron1), (time2, neuron2)) in enumerate(polychronous_group.edges(), start=1):
         if time2 < time1: time1, neuron1, time2, neuron2 = time2, neuron2, time1, neuron1
         highlight_connection(ax, (neuron1, neuron2), pos)
-    set_axis_hidens(ax, pos)
+    set_axis_hidens(ax)
 
 
 def plot_pcgs(ax, list_of_polychronous_groups):
