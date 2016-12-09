@@ -14,12 +14,12 @@ def find_overlap(axon_delay, dendrite_peak, presynaptic_neuron, postsynaptic_neu
     if dendrite_size > 0:
         overlap_size = sum(overlap)
         overlap_ratio = float(overlap_size) / dendrite_size
-        if thr_ratio < overlap_ratio and thr_overlap < overlap_size:
+        if thr_ratio <= overlap_ratio and thr_overlap <= overlap_size:
             delay = np.mean(axon_delay[presynaptic_neuron][overlap])
             logging.debug('overlap at %d electrodes (ratio= %1.2f) with mean delay = %1.1f [ms]' % (overlap_size, overlap_ratio, delay))
         else:
             logging.debug('overlap at %d electrodes (ratio= %1.2f) too small, no delay assigned' % (overlap_size, overlap_ratio) )
-    return overlap, overlap_ratio, delay
+    return overlap_size, overlap_ratio, delay
 
 
 def all_overlaps(axon_delay, dendrite_peak, thr_peak=10, thr_ratio=0.10, thr_overlap=0):
