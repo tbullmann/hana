@@ -79,7 +79,7 @@ def timelag_standardscore(timeseries1, timeseries2, surrogates):
     """Returns timelags (midpoints of bins) and standard score as well as the counts from the orginal timeseries
     and mean and standard deviation for the counts from surrogate timeseries"""
     timeseries_hist, bins = timelag_hist(timelag(timeseries1, timeseries2))
-    timelags = (bins[:-1] + bins[1:])/2
+    timelags = (bins[:-1] + bins[1:])/2 * 1000  # ms
     surrogates_hist = np.vstack([timelag_hist(timelag(timeseries1, surrogate))[0] for surrogate in surrogates])
     surrogates_mean = surrogates_hist.mean(0)
     surrogates_std = np.std(surrogates_hist, 0)

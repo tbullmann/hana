@@ -71,7 +71,7 @@ def plot_pair_func(timelags, timeseries_hist, surrogates_mean, surrogates_std, s
 def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None):
     axis.step(timelags, std_score, label="standard score", color='k', linewidth=1, where='mid')
     axis.set_xlim([np.min(timelags), np.max(timelags)])
-    axis.set_xlabel("time lag [s]")
+    axis.set_xlabel("time lag [ms]")
     axis.set_ylabel("(normalized)")
     if thr is not None:
         axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label='threshold')
@@ -87,7 +87,7 @@ def plot_timeseries_hist_and_surrogates(axis, timelags, timeseries_hist, surroga
               linestyle='dotted', where='mid')
     axis.step(timelags, surrogates_mean + surrogates_std, color='b', linewidth=1, linestyle='dotted', where='mid')
     axis.set_xlim([np.min(timelags), np.max(timelags)])
-    axis.set_xlabel("time lag [s]")
+    axis.set_xlabel("time lag [ms]")
     axis.set_ylabel("count")
     axis.legend()
 
