@@ -68,19 +68,19 @@ def plot_pair_func(timelags, timeseries_hist, surrogates_mean, surrogates_std, s
     plot_std_score_and_peaks(ax2, timelags, std_score)
 
 
-def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None):
+def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None, loc=1):
     axis.step(timelags, std_score, label="standard score", color='k', linewidth=1, where='mid')
     axis.set_xlim([np.min(timelags), np.max(timelags)])
     axis.set_xlabel("time lag [ms]")
     axis.set_ylabel("(normalized)")
     if thr is not None:
-        axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label='threshold')
+        axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label=r'threshold, $\zeta=$%1.1f' % thr)
     if peak is not None:
             axis.vlines(peak, thr, np.max(std_score), colors='r', linewidth=4, label='peak')
-    axis.legend()
+    axis.legend(loc=loc)
 
 
-def plot_timeseries_hist_and_surrogates(axis, timelags, timeseries_hist, surrogates_mean, surrogates_std):
+def plot_timeseries_hist_and_surrogates(axis, timelags, timeseries_hist, surrogates_mean, surrogates_std, loc=1):
     axis.step(timelags, timeseries_hist, label="original histogram", color='k', linewidth=1, where='mid')
     axis.step(timelags, surrogates_mean, label="surrogates (mean)", color='b', linewidth=1, where='mid')
     axis.step(timelags, surrogates_mean - surrogates_std, label="surrogates (std)", color='b', linewidth=1,
@@ -89,7 +89,7 @@ def plot_timeseries_hist_and_surrogates(axis, timelags, timeseries_hist, surroga
     axis.set_xlim([np.min(timelags), np.max(timelags)])
     axis.set_xlabel("time lag [ms]")
     axis.set_ylabel("count")
-    axis.legend()
+    axis.legend(loc=loc)
 
 
 # Plotting structural connectivity
