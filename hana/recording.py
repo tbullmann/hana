@@ -10,11 +10,12 @@ from scipy.spatial.distance import squareform, pdist
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-
-HIDENS_ELECTRODES_FILE = 'data/hidens_electrodes.h5'
-MAXIMUM_NEIGHBORS = 7 # sanity check: there are 7 electrodes within 20um on hidens
-NEIGHBORHOOD_RADIUS = 20 # neighboring electrodes within 20um
-DELAY_EPSILON = 0.050  # resolution for threshold
+import os
+this_dir, this_filename = os.path.split(__file__)
+HIDENS_ELECTRODES_FILE = os.path.join(this_dir, 'hidens_electrodes.h5')
+HIDENS_MAXIMUM_NEIGHBORS = 7 # sanity check: there are 7 electrodes within 20um on hidens
+HIDENS_NEIGHBORHOOD_RADIUS = 20 # neighboring electrodes within 20um
+DELAY_EPSILON = 0.050  # resolution for threshold in ms
 
 
 def half_peak_width(x, y): return np.diff(half_peak_domain(x, y))
@@ -123,17 +124,22 @@ def find_peaks(V, t, negative_peaks=True):
     return delay
 
 
-def electrode_neighborhoods(pos):
+def electrode_neighborhoods(mea='hidens'):
     """
     Calculate neighbor matrix from distances between electrodes.
-    :param pos: electrode coordinates
+    :param mea: type of the micro electrode array
     :return: neighbors: square matrix
     """
+    if mea=='hidens':
+        pos = load_positions(mea=mea)
+        neighborhood_radius = HIDENS_NEIGHBORHOOD_RADIUS
+        maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS
+
     pos_as_array = np.asarray(zip(pos.x, pos.y))
     distances = squareform(pdist(pos_as_array, metric='euclidean'))
-    neighbors = distances < NEIGHBORHOOD_RADIUS
+    neighbors = distances < neighborhood_radius
     sum_neighbors = sum(neighbors)
-    assert (max(sum_neighbors)) <= MAXIMUM_NEIGHBORS  # sanity check
+    assert (max(sum_neighbors)) <= maximum_neighbors  # sanity check
     return neighbors
 
 
@@ -167,9 +173,10 @@ def load_timeseries(filename):
     return timeseries
 
 
-def load_positions(hdf5_filename):
+def load_positions(mea='hidens'):
     """Loads electrode positions"""
-    pos = load_dict_from_hdf5(hdf5_filename)
+    if mea == 'hidens':
+        pos = load_dict_from_hdf5(HIDENS_ELECTRODES_FILE)
     return np.rec.fromarrays((pos['x'], pos['y']), dtype=[('x', 'f4'), ('y', 'f4')])
 
 
