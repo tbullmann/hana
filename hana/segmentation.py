@@ -1,5 +1,5 @@
 from hana.h5dict import save_dict_to_hdf5, load_dict_from_hdf5
-from hana.recording import load_positions, HIDENS_ELECTRODES_FILE, electrode_neighborhoods, load_traces, find_peaks, \
+from hana.recording import load_positions, electrode_neighborhoods, load_traces, find_peaks, \
     neighborhood_statistics, mean_std_for_random_delays, find_valley, half_peak_domain
 
 from os import path, listdir
