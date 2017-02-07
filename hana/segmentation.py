@@ -141,7 +141,7 @@ def neuron_position_from_trigger_electrode(pos, trigger):
     return neuron_pos
 
 
-def __segment_dendrite(t, V, neighbors):
+def segment_dendrite_verbose(t, V, neighbors):
     """
     Verbose segment dendrite function for figures.
     :param V:
@@ -175,13 +175,13 @@ def segment_dendrite(t, V, neighbors):
     :return: all internal variables
     """
     delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, min_delay, max_delay, \
-        return_current_delay, dendrite = __segment_dendrite(t, V, neighbors)
+        return_current_delay, dendrite = segment_dendrite_verbose(t, V, neighbors)
     positive_voltage = np.max(V, axis=1)
     dendrite_return_current = restrict_to_compartment(positive_voltage, dendrite)
     return dendrite_return_current
 
 
-def __segment_axon(t, V, neighbors):
+def segment_axon_verbose(t, V, neighbors):
     """
     Verbose segment axon function for figures.
     :param V:
@@ -208,7 +208,7 @@ def segment_axon(t, V, neighbors):
     :param neighbors:
     :return: all internal variables
     """
-    _, mean_delay, _, _, _, _, _, _, axon = __segment_axon(t, V, neighbors)
+    _, mean_delay, _, _, _, _, _, _, axon = segment_axon_verbose(t, V, neighbors)
     delay = restrict_to_compartment(mean_delay, axon)
     return delay
 
