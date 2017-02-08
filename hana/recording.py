@@ -124,7 +124,7 @@ def find_peaks(V, t, negative_peaks=True):
     return delay
 
 
-def electrode_neighborhoods(mea='hidens'):
+def electrode_neighborhoods(mea='hidens', neighborhood_radius=None):
     """
     Calculate neighbor matrix from distances between electrodes.
     :param mea: type of the micro electrode array
@@ -132,8 +132,9 @@ def electrode_neighborhoods(mea='hidens'):
     """
     if mea=='hidens':
         pos = load_positions(mea=mea)
-        neighborhood_radius = HIDENS_NEIGHBORHOOD_RADIUS
-        maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS
+        if not neighborhood_radius:
+            neighborhood_radius = HIDENS_NEIGHBORHOOD_RADIUS
+        maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS * (neighborhood_radius/HIDENS_NEIGHBORHOOD_RADIUS) ** 2
 
     pos_as_array = np.asarray(zip(pos.x, pos.y))
     distances = squareform(pdist(pos_as_array, metric='euclidean'))
