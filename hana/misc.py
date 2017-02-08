@@ -4,6 +4,7 @@ from itertools import chain
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
+from scipy.signal import butter, lfilter
 
 
 def unique_neurons(pair_dict):
@@ -57,3 +58,17 @@ def test_fitting_a_model():
     plt.plot(x,y,'x')
     plt.plot(xfit,yfit)
     plt.show()
+
+
+def butter_bandpass(lowcut=100, highcut=3500, fs=20000, order=5):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
+
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
