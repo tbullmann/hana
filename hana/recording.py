@@ -181,6 +181,24 @@ def load_positions(mea='hidens'):
     return np.rec.fromarrays((pos['x'], pos['y']), dtype=[('x', 'f4'), ('y', 'f4')])
 
 
+def average_electrode_area(pos, mea=None):
+    """
+    Returns average electrode area in um2/electrode
+    If the MEA is specified, the bounding box area devided by electrode number gives a good estimate, e.g. for hidens:
+        real values: s * t = 16.20 * 19.59 = 317.358 um2/electrode
+        approximation: 314.391181009 um2/electrode
+        relative error = -0.935%
+    :param pos: electrode area positions, could be ommitted if mea type is given
+    :param mea: MEA type, use approximisation if none is given
+    :return: area: average electrode area in um2/electrode
+    """
+    if mea is None:
+        area = (max(pos.x) - min(pos.x)) * (max(pos.y) - min(pos.y)) / len(pos.x)
+    if mea is 'hidens':
+        area = 317.358
+    return area
+
+
 def interval_of_timeseries (timeseries):
     first, last = [], []
     for neuron in timeseries:
