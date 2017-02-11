@@ -15,7 +15,7 @@ this_dir, this_filename = os.path.split(__file__)
 HIDENS_ELECTRODES_FILE = os.path.join(this_dir, 'hidens_electrodes.h5')
 HIDENS_MAXIMUM_NEIGHBORS = 7 # sanity check: there are 7 electrodes within 20um on hidens
 HIDENS_NEIGHBORHOOD_RADIUS = 20 # neighboring electrodes within 20um
-DELAY_EPSILON = 0.050  # resolution for threshold in ms
+DELAY_EPSILON = 0.050  # resolution for threshold in ms   TODO use nbins, eg. 4ms+4ms/0.05ms = 8 * 20 = 160
 
 
 def half_peak_width(x, y): return np.diff(half_peak_domain(x, y))
