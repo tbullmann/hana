@@ -2,24 +2,65 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def set_axis_hidens(ax, margin=20):
+def set_axis_hidens(ax, style='scalebar',
+                    mea='hidens', x=None, y=None, bbox=None, margin=20,
+                    barlength=None, yoffset=None, barposition='outside', barcolor='k',):
     """
-    Standard layout for the multi electrode array.
+    Standard layout for mapping on the multi electrode array.
     :param ax: plots axis handle.
+    :param style: 'scalebar' (default) | 'axes' | 'none'
     :param margin: margin around electrodes
-    :return: Noting.
+    :param mea: default 'hidens'
+    :param x, y: optional coordinates, e.g. incase only part of the array is used
+    :param bbox: optional bbox, e.g. for a closeup
+    :param margin: default 20um
+    :param barlength: default 500um
+    :param yoffset: default 100um
+    :param barposition: 'outside' (default) or 'inside'
+    :param barcolor: default black
+    :return:
     """
+
+    if mea=='hidens':
+            minx, maxx = 175.5, 1908.9
+            miny, maxy = 98.123001, 2096.123
+    if x is not None:
+        minx, maxx = min(x), max(y)
+        miny, maxy = min(y), max(y)
+    if bbox is not None:
+        minx, maxx, miny, maxy = bbox
+    if not barlength:
+        barlength = round_to_1((maxx-minx)/4)
+    if not yoffset:
+        yoffset = (maxy-miny)/20
+
     ax.set_aspect('equal')
-    # previously the position of all electrodes was used:
-    # ax.set_xlim([min(pos.x) - margin, max(pos.x) + margin])
-    # ax.set_ylim([min(pos.y) - margin, max(pos.y) + margin])
-    # print([min(pos.x) , max(pos.x) ])
-    # print([min(pos.y) , max(pos.y) ])
-    ax.set_xlim([175.5 - margin, 1908.9+ margin])
-    ax.set_ylim([98.123001-margin, 2096.123+margin])
-    ax.set_xlabel(r'x [$\mu$m]')
-    ax.set_ylabel(r'y [$\mu$m]')
-    ax.invert_yaxis()
+    ax.set_xlim([minx - margin, maxx + margin])
+    ax.set_ylim([miny - margin, maxy + margin])
+
+    if mea=='hidens':
+        ax.invert_yaxis()
+
+    if style=='axes':
+        ax.set_xlabel(r'x [$\mu$m]')
+        ax.set_ylabel(r'y [$\mu$m]')
+    else:  # in case of 'scale'bar' or 'none' turn axes off
+        ax.axis('off')
+
+    if style=='scalebar':
+        if barposition=='inside':
+            yoffset = -yoffset
+            verticalalignment = 'bottom'
+        if barposition == 'outside':
+            verticalalignment = 'top'
+
+        plt.plot((minx, minx+barlength),(maxy+margin+yoffset, maxy+margin+yoffset), color=barcolor, linestyle='-', linewidth=2, clip_on=False)
+        plt.text(minx+barlength/2,maxy+margin+yoffset, r"$\mathsf{%d\mu m}$" % barlength,
+                 color=barcolor, fontsize=14,
+                 horizontalalignment='center', verticalalignment=verticalalignment )
+
+from math import floor, log10
+round_to_1 = lambda x: round(x, -int(floor(log10(abs(x)))))
 
 
 def annotate_x_bar(domain, y, text='', color = 'r', arrowstyle='|-|'):
