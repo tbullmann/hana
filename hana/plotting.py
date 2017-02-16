@@ -54,8 +54,8 @@ def mea_axes(ax, style='scalebar',
         if barposition == 'outside':
             verticalalignment = 'top'
 
-        plt.plot((minx, minx+barlength),(maxy+margin+yoffset, maxy+margin+yoffset), color=barcolor, linestyle='-', linewidth=2, clip_on=False)
-        plt.text(minx+barlength/2,maxy+margin+yoffset, r"$\mathsf{%d\mu m}$" % barlength,
+        ax.plot((minx, minx+barlength),(maxy+margin+yoffset, maxy+margin+yoffset), color=barcolor, linestyle='-', linewidth=2, clip_on=False)
+        ax.text(minx+barlength/2,maxy+margin+yoffset, r"$\mathsf{%d\mu m}$" % barlength,
                  color=barcolor, fontsize=14,
                  horizontalalignment='center', verticalalignment=verticalalignment )
 
@@ -111,9 +111,10 @@ def plot_pair_func(timelags, timeseries_hist, surrogates_mean, surrogates_std, s
 
 def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None, loc=1):
     axis.step(timelags, std_score, label="standard score", color='k', linewidth=1, where='mid')
+    axis.set_autoscale_on(True)
     axis.set_xlim([np.min(timelags), np.max(timelags)])
     axis.set_xlabel("time lag [ms]")
-    axis.set_ylabel("(normalized)")
+    axis.set_ylabel("z")
     if thr is not None:
         axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label=r'threshold, $\zeta=$%1.1f' % thr)
     if peak is not None:
