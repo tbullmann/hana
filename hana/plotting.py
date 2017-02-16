@@ -2,9 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def set_axis_hidens(ax, style='scalebar',
-                    mea='hidens', x=None, y=None, bbox=None, margin=20,
-                    barlength=None, yoffset=None, barposition='outside', barcolor='k',):
+def mea_axes(ax, style='scalebar',
+             mea='hidens', x=None, y=None, bbox=None, margin=20,
+             barlength=None, yoffset=None, barposition='outside', barcolor='k', ):
     """
     Standard layout for mapping on the multi electrode array.
     :param ax: plots axis handle.

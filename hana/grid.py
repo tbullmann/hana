@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from matplotlib import pyplot as plt
 
-from hana.plotting import set_axis_hidens
+from hana.plotting import mea_axes
 from hana.recording import load_traces
 from publication.plotting import FIGURE_NEURON_FILE_FORMAT
 
@@ -133,7 +133,7 @@ def test_subset(neuron=5):
     ax = plt.subplot(111)
     plt.plot(x, y, 'o', markerfacecolor='None', markeredgecolor='black', label='all')
     plt.plot(xs, ys, 'ko', label='subset')
-    set_axis_hidens(ax)
+    mea_axes(ax)
     plt.legend(numpoints=1)
 
     plt.show()
@@ -154,7 +154,7 @@ def test_grid(neuron=5):
     plt.plot(xb, yb, 'k+', label='backtransformed')
     plt.plot(x0, y0, 'go', label='hexagonal origin (backtransformed)')
     plt.title ('cartesian coordinates x,y')
-    set_axis_hidens(ax1)
+    mea_axes(ax1)
     ax1.set_ylim((-500,2200))
     plt.legend(numpoints=1)
 
