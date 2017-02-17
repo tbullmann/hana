@@ -23,8 +23,8 @@ def extract_all_compartments(neurons, template):
     """
 
     # Load electrode coordinates and calculate neighborhood
-    pos = load_positions(HIDENS_ELECTRODES_FILE)
-    neighbors = electrode_neighborhoods(pos)
+    # pos = load_positions(mea='hidens')
+    neighbors = electrode_neighborhoods(mea='hidens')
 
     # Initialize dictionaries
     extracted_neurons = []
