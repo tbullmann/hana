@@ -89,14 +89,15 @@ def plot_network(ax, pair_dict, pos, color='k'):
 def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None, connected=True):
     pre, post = neuron_pair
     linestyle = '-' if connected else ':'
+    color = 'r' if connected else 'b'
     ax.annotate('', (neuron_pos.x[pre], neuron_pos.y[pre]), (neuron_pos.x[post], neuron_pos.y[post]),
-                arrowprops={'arrowstyle': '<-', 'linestyle': linestyle, 'color':'r', 'linewidth':2})
-    ax.scatter(neuron_pos.x[pre], neuron_pos.y[pre], s=18, marker='o', color='r')
-    ax.scatter(neuron_pos.x[post], neuron_pos.y[post], s=18, marker='o', color='r')
+                arrowprops={'arrowstyle': '<-', 'linestyle': linestyle, 'color':color, 'linewidth':2})
+    ax.scatter(neuron_pos.x[pre], neuron_pos.y[pre], s=18, marker='o', color=color)
+    ax.scatter(neuron_pos.x[post], neuron_pos.y[post], s=18, marker='o', color=color)
     if annotation_text is not None:
         x = np.mean((neuron_pos.x[pre], neuron_pos.x[post]))
         y = np.mean((neuron_pos.y[pre], neuron_pos.y[post]))
-        plt.text(x, y, annotation_text, color = 'r')
+        plt.text(x, y, annotation_text, color = color)
 
 
 # Plotting functional connectivity
@@ -119,7 +120,8 @@ def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None, loc=1
         axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label=r'threshold, $\zeta=$%1.1f' % thr)
     if peak is not None:
             axis.vlines(peak, thr, np.max(std_score), colors='r', linewidth=4, label='peak')
-    axis.legend(loc=loc)
+    if loc>0:
+        axis.legend(loc=loc)
 
 
 def plot_timeseries_hist_and_surrogates(axis, timelags, timeseries_hist, surrogates_mean, surrogates_std, loc=1):
