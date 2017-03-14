@@ -1,6 +1,3 @@
-%TODO: Fix the BIG BUG in the matlab export script / Neuron2Electrode: Indicies for electrodes in events
-%correctly start at 0, in delays and positive peak the (trigger) electrodes from 1 (!)
-
 % % Import
 % neurons=events.neurons;
 % NeuronTable = events.NeuronTable;
