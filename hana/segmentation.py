@@ -77,17 +77,21 @@ def extract_compartments(t, V, neighbors):
     return axon, dendrite, axonal_delay, dendrite_return_current, index_AIS, number_axon_electrodes, number_dendrite_electrodes
 
 
-def get_neurons_from_template(template):
+def get_neurons_from_template(template, ignore=None):
     """Get all neuron indices for the files that match the template string, e.g. 'data/neuron%d.h5'."""
     neurons = []
     path_to_files, file_template = path.split(template)
     for formatted in listdir(path_to_files):
         result = compile("(.*)".join(file_template.split("%d"))).match(formatted)
-        if result: neurons.append(int(result.groups()[0]))
+        if result:
+            neuron = int(result.groups()[0])
+            print neuron
+            if neuron not in ignore:
+                neurons.append(neuron)
     return neurons
 
 
-def extract_and_save_compartments(template, filename):
+def extract_and_save_compartments(template, filename, ignore=[1544]):
     """
     Read spike triggered averages for each neurons from the files matching the template, extract the compartments
     and save the result in a single file.
@@ -95,7 +99,7 @@ def extract_and_save_compartments(template, filename):
     :param filename: output filename, e.g. 'temp/all_neurites.h5'
     :return:
     """
-    neurons = get_neurons_from_template(template)
+    neurons = get_neurons_from_template(template, ignore=ignore)
     all_triggers, all_AIS, all_axonal_delays, all_dendritic_return_currents =  extract_all_compartments(neurons, template)
 
     data = {'neurons': np.array(neurons),
