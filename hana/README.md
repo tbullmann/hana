@@ -1,11 +1,10 @@
 # hana: high density micro electrode array recordings analysis
 
-Hana is a Python library for analysing recordings made by high density micro electrode array,
-distributed under the open-source, BSD-like licence.
+Hana is a Python library for analysing recordings made by high density micro electrode array.
 
 If you use this library in your research, please cite:
 
-> Bullmann T, Huber S, Deligkaris K, Hierlemann A and Frey U (????) ????
+> Bullmann T, et al. Network analysis of high-density microelectrode recordings (????) ????
 
 ## Disclaimer
 
