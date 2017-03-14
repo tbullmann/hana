@@ -85,18 +85,18 @@ def get_neurons_from_template(template, ignore=None):
         result = compile("(.*)".join(file_template.split("%d"))).match(formatted)
         if result:
             neuron = int(result.groups()[0])
-            print neuron
             if neuron not in ignore:
                 neurons.append(neuron)
     return neurons
 
 
-def extract_and_save_compartments(template, filename, ignore=[1544]):
+def extract_and_save_compartments(template, filename, ignore=None):
     """
     Read spike triggered averages for each neurons from the files matching the template, extract the compartments
     and save the result in a single file.
     :param template: input filename with format string for the indexing, e.g. 'data/neuron%d.h5'
     :param filename: output filename, e.g. 'temp/all_neurites.h5'
+    :param ignore: list with neurons that should be ignored
     :return:
     """
     neurons = get_neurons_from_template(template, ignore=ignore)
