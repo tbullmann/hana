@@ -86,12 +86,12 @@ def plot_network(ax, pair_dict, pos, color='k'):
         ax.annotate('', (pos.x[pre], pos.y[pre]), (pos.x[post], pos.y[post]), arrowprops={'arrowstyle': '<-', 'color':color})
 
 
-def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None, connected=True):
+def highlight_connection (ax, neuron_pair, neuron_pos, annotation_text=None, connected=True, linewidth=2):
     pre, post = neuron_pair
     linestyle = '-' if connected else ':'
     color = 'r' if connected else 'b'
     ax.annotate('', (neuron_pos.x[pre], neuron_pos.y[pre]), (neuron_pos.x[post], neuron_pos.y[post]),
-                arrowprops={'arrowstyle': '<-', 'linestyle': linestyle, 'color':color, 'linewidth':2})
+                arrowprops={'arrowstyle': '<-', 'linestyle': linestyle, 'color':color, 'linewidth':linewidth})
     ax.scatter(neuron_pos.x[pre], neuron_pos.y[pre], s=18, marker='o', color=color)
     ax.scatter(neuron_pos.x[post], neuron_pos.y[post], s=18, marker='o', color=color)
     if annotation_text is not None:
