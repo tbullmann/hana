@@ -19,3 +19,18 @@ For a full list of dependencies, see the [`requirements.txt`](requirements.txt) 
 ## Installation
 
 See installation instruction for the [hdmea](../README.md) package.
+
+## Components
+
+### Main functionality
+* [Accessing data](recording.py)
+* [Segmenation of axons and dendrites](segmentation.py)
+* [Estimation of structural connectivity](structure.py)
+* [Estimation of functional connectivity](function.py) and some [tests](test_function.py)
+* [Detection of polychronous groups](polychronous.py)
+
+### Supporting
+* [Miscellaneous](misc.py)
+* [General plotting functions](plotting.py)
+* [Hexagonal grid conversions](grid.py)
+* [HDF5 for dictrionaries](h5dict.py)
