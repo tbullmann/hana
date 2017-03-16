@@ -55,7 +55,7 @@ def mea_axes(ax, style='scalebar',
             verticalalignment = 'top'
 
         ax.plot((minx, minx+barlength),(maxy+margin+yoffset, maxy+margin+yoffset), color=barcolor, linestyle='-', linewidth=2, clip_on=False)
-        ax.text(minx+barlength/2,maxy+margin+yoffset, r"$\mathsf{%d\mu m}$" % barlength,
+        ax.text(minx+barlength/2,maxy+margin+yoffset*1.2, r"$\mathsf{%d\ \mu m}$" % barlength,
                  color=barcolor, fontsize=14,
                  horizontalalignment='center', verticalalignment=verticalalignment )
 
