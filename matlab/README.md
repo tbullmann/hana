@@ -6,15 +6,15 @@ The files are very specific to the "hidens" HDMEA and the (internal) cmosmea.git
 _NOTE_: In future export all '*.ntk' to '*.h5' and rewrite MATLAB scripts in Python: 
 
 * Event extraction
-* _Activity maps (from block scan)_
-* _Footprint (showing spike wave form)_
+* _Activity maps_ (from block scan)
+* _Footprint_ (showing spike wave form)
 * Event cut 
 * Spike Sorting (Fitting a Gaussian mixture model by an EM Algorithm)
 * Spike triggered averaging (mean, median)
 * Movies
 * _Burst detection_ (Fitting a hidden Markov model)
 
-Preferably using the [neo](https://pythonhosted.org/neo/) data format which can be found [on Github](https://github.com/NeuralEnsemble/python-neo). 
+Maybe using the [neo](https://pythonhosted.org/neo/) data format which can be found [on Github](https://github.com/NeuralEnsemble/python-neo). 
 Support for parallel processing or multiprocessing would be preferably as well. 
 
 
