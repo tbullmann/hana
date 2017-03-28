@@ -37,9 +37,9 @@ def half_peak_domain(x, y, negative_peak=True, plot=False):
     spline_representation = interpolate.splrep(x, y)
     xs, ys, k = spline_representation
     roots = interpolate.sproot((xs, ys - y_peak/2, k))
-
+    roots = np.hstack((min(x),roots, max(x)))  # ensure x_peak is not at either end of the list
     index_roots = np.searchsorted(roots, x_peak)
-    domain = list(roots[range(index_roots-1,index_roots+1)])
+    domain = list(roots[range(index_roots-1, index_roots+1)])
 
     if plot:
         logging.info ('Peak at %f, with half width domain %f ~ %f' % (x_peak, min(domain), max(domain)))
