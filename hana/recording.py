@@ -213,7 +213,7 @@ def average_electrode_area(pos, mea=None):
 def interval_of_timeseries (timeseries):
     first, last = [], []
     for neuron in timeseries:
-        first.append (min(timeseries[neuron]))
+        first.append(min(timeseries[neuron]))
         last.append(max(timeseries[neuron]))
     return min(first), max(last)
 
@@ -221,9 +221,8 @@ def interval_of_timeseries (timeseries):
 def partial_timeseries (timeseries, interval=0.1):
 
     begin, end = interval_of_timeseries(timeseries)
-
     if interval is not tuple:
-        partial_begin, partial_end = (begin, (end-begin) * interval)
+        partial_begin, partial_end = (begin, begin + (end-begin) * interval)
     else:
         partial_begin, partial_end = interval
 
