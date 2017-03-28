@@ -177,9 +177,11 @@ def load_traces(filename):
 def get_variable(file, key): return np.array(file[key] if key in file.keys() else None)
 
 
-def load_timeseries(filename):
+def load_timeseries(filename, neurons='all'):
     """Load time series as a dictionary indexed by neuron from hdf5 file"""
     timeseries = load_dict_from_hdf5(filename)
+    if neurons is not 'all':
+        timeseries = {neuron: timeseries[neuron] for neuron in neurons}
     return timeseries
 
 
