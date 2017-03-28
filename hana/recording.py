@@ -79,11 +79,11 @@ def neighborhood(neighbors, index):
 
 def find_valley(std_delay, expected_std_delay):
     # Find valley between peak for axons and peak for random peak at expected_std_delay
-    if expected_std_delay>0:  # e.g. if V is flat
+    if expected_std_delay>0:
         hist, bin_edges = np.histogram(std_delay, bins=np.arange(0, expected_std_delay, step=DELAY_EPSILON))
         index_thr = np.argmin(hist)
         thr = bin_edges[index_thr + 1]
-    else:
+    else:  # e.g. if V is flat
         thr = 0
     return thr
 
