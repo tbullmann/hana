@@ -85,8 +85,12 @@ def get_neurons_from_template(template, ignore=None):
         result = compile("(.*)".join(file_template.split("%d"))).match(formatted)
         if result:
             neuron = int(result.groups()[0])
-            if neuron not in ignore:
+            if ignore:
+                if neuron not in ignore:
+                    neurons.append(neuron)
+            else:
                 neurons.append(neuron)
+    logging.info('Found files for neurons: {}'.format(neurons))
     return neurons
 
 
