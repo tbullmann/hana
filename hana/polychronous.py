@@ -31,7 +31,6 @@ def filter(timeseries, axonal_delays, additional_synaptic_delay=0.001, synaptic_
             shifted_presynaptic_spikes = presynaptic_spikes+time_lag
             postsynaptic_spikes = timeseries[post]
             postsynaptic_spikes = np.hstack((-np.inf, postsynaptic_spikes, np.inf))  # padding to keep position within
-            # if len(presynaptic_spikes) > 0 and len(postsynaptic_spikes) > 0:
             for offset in (0, 1):  # checking postsynaptic spike before and after shifted presynaptic spike
                 position = (np.searchsorted(postsynaptic_spikes, shifted_presynaptic_spikes) - offset).\
                     clip(0, len(postsynaptic_spikes) - 1)
