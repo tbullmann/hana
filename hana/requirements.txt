@@ -6,3 +6,4 @@ pandas
 statsmodels
 networkx
 h5py
+pyyaml
