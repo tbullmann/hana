@@ -180,3 +180,13 @@ def shuffle_network(network, method='shuffle in-nodes'):
     print (new_network)
 
     return new_network
+
+
+def extract_pcgs(connected_events):
+    graph_of_connected_events = combine(connected_events)
+    logging.info('Data: %d events form %d pairs'
+                 % (len(graph_of_connected_events.nodes()), len(graph_of_connected_events.edges())))
+    list_of_polychronous_groups = group(graph_of_connected_events)
+    logging.info('Data: Forming %d polycronous groups' % len(list_of_polychronous_groups))
+    polychronous_group_size = list(len(g) for g in list_of_polychronous_groups)
+    return list_of_polychronous_groups, polychronous_group_size
