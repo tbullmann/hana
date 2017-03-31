@@ -1,11 +1,6 @@
 import logging
 
 import numpy as np
-from matplotlib import pyplot as plt
-
-from hana.plotting import mea_axes
-from hana.recording import load_traces
-from publication.plotting import FIGURE_NEURON_FILE_FORMAT
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -121,54 +116,3 @@ class HidensTransformation(AffineTransformation):
         xs, ys, = self.x[index], self.y[index]
         Vs = V[index, :]
         return xs, ys, Vs
-
-
-def test_subset(neuron=5):
-    filename = FIGURE_NEURON_FILE_FORMAT % neuron
-    V, t, x, y, trigger, neuron = load_traces(filename)
-
-    hidens = HidensTransformation(x, y)
-    xs, ys, Vs = hidens.subset(V)
-
-    ax = plt.subplot(111)
-    plt.plot(x, y, 'o', markerfacecolor='None', markeredgecolor='black', label='all')
-    plt.plot(xs, ys, 'ko', label='subset')
-    mea_axes(ax)
-    plt.legend(numpoints=1)
-
-    plt.show()
-
-
-def test_grid(neuron=5):
-    filename = FIGURE_NEURON_FILE_FORMAT % neuron
-    V, t, x, y, trigger, neuron = load_traces(filename)
-
-    hidens = HidensTransformation(x, y)
-
-    i, j = hidens.xy2ij(x,y)
-    xb, yb = hidens.ij2xy(i,j)
-    x0, y0 = hidens.ij2xy(0,0)
-
-    ax1 = plt.subplot(121)
-    plt.plot(x, y, 'bx', label='original')
-    plt.plot(xb, yb, 'k+', label='backtransformed')
-    plt.plot(x0, y0, 'go', label='hexagonal origin (backtransformed)')
-    plt.title ('cartesian coordinates x,y')
-    mea_axes(ax1)
-    ax1.set_ylim((-500,2200))
-    plt.legend(numpoints=1)
-
-    ax2 = plt.subplot(122)
-    plt.plot(i, j, 'ko', label='transformed')
-    plt.plot(0, 0, 'go', label='hexagonal origin')
-    plt.title('hexagonal grid index i, j')
-    ax2.set_xlim((-1,np.amax(i)))
-    ax2.set_ylim((-1, np.amax(j)))
-    plt.legend(numpoints=1)
-
-    plt.show()
-
-
-if __name__ == "__main__":
-    test_grid()
-    test_subset()
