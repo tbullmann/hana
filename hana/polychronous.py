@@ -161,7 +161,6 @@ def shuffle_network(network, method='shuffle in-nodes'):
 
     :return:
     """
-    print (network)
     vertices = network.keys()
     values = network.values()
 
@@ -177,7 +176,6 @@ def shuffle_network(network, method='shuffle in-nodes'):
         vertices = zip(out_nodes, new_in_nodes)
 
     new_network = dict(zip(vertices, values))
-    print (new_network)
 
     return new_network
 
