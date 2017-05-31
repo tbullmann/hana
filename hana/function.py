@@ -1,6 +1,11 @@
+from __future__ import division
 from itertools import product, groupby
 import numpy as np
 import logging
+
+from scipy.special._ufuncs import erfc
+from statsmodels.stats.multitest import fdrcorrection
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -111,41 +116,79 @@ def all_timelag_standardscore (timeseries, timeseries_surrogates):
     return timelags, dict(all_std_score), dict(all_timeseries_hist)
 
 
-def find_peaks (x, y, thr=0):
-    """Splits the argument x of the function y(x) into separate intervals [x_start, x_end] where y(x)>thr continuously
-    and returns the y_max, x_max, x_start, x_end for each interval"""
-    pieces = (zip(*list(g)) for k, g in groupby(enumerate(y), lambda iv: iv[1] > thr) if k)
-    try: y_max, x_max, x_start, y_start = zip(*((max(v), x[i[np.argmax(v)]], x[i[0]], x[i[-1]]) for (i, v) in pieces))
-    except: y_max, x_max, x_start, y_start = (), (), (), ()  # nothing above threshold
-    return np.array(y_max), np.array(x_max), np.array(x_start), np.array(y_start)
+def all_peaks (timelags, std_score_dict, structural_delay_dict=None, minimal_synapse_delay=0):
+    """
+    Return the largest standard score peak for each functional connection, rejecting false positives.
+    Implemented is the forward direction, that is looking for peaks at post-synaptic time lags
 
+    After converting z values into p values by p = erfc(z/sqrt(2), the Benjamini-Hochberg procedure is applied to
+    control the false discovery rate in the multiple comparisons with a false discover rat fixed at one in all
+    comparisons. (alpha = 1/number of standard scores)
 
-def all_peaks (timelags, std_score_dict, thr=10, direction='both'):
-    """Compute peaks"""
-    all_score_max, all_timelag_max, all_timelag_start, all_timelag_end = [],[],[],[]
-    for pair in std_score_dict:
-        score_max, timelag_max, timelag_start, timelag_end = find_peaks(timelags, std_score_dict[pair], thr=thr)
-        if direction=='reverse':
-            timelag_max = -timelag_max
-            timelag_start = - timelag_start
-            timelag_end = - timelag_end
-            pair = pair[::-1]
-        if direction<>'both':  # if forward or reversed only, subset the peak descriptions
-            index = timelag_max>0
-            score_max = score_max[index]
-            timelag_max = timelag_max[index]
-            timelag_start = timelag_start[index]
-            timelag_end = timelag_end[index]
-        if len(score_max)>0:
-            index_largest_peak = np.argmax(score_max)
+    If provided only timelags larger than the sum of axonal and synaptic delay are considered, but the returned
+    time lags correspond to the response times to the presynaptic spikes that exclude the axonal delays. This implies
+    that only structural connected neuron pairs are tested.
+
+    :param timelags: array with time lags for standard scores
+    :param std_score_dict: standard scores indexed by neuron pair
+    :param structural_delay_dict: (optional) axonal delays indexed by neuron pair
+    :param minimal_synapse_delay: (optional) time lag must be larger than this synapse delay (and axonal delay)
+    :return: all_score_max: standard score index py neuron pair
+     all_timelag_max: time lags indexed by neuron pair
+     z_thr: threshold for standard score
+    """
+    # TODO Implement reverse directions, that is looking for peaks at pre-synaptic spike time lags
+    # TODO Implement detection of negative peaks (inhibitory connections)
+
+    if structural_delay_dict is None:
+        pairs = std_score_dict
+        offset = lambda pair: 0
+    else:  # consider axonal delays
+        pairs = structural_delay_dict
+        offset = lambda pair: structural_delay_dict[pair]
+
+    # first, collect all z values and determine threshold
+    z_values = list()
+    for pair in pairs:
+        use = timelags > offset(pair)
+        std_score = std_score_dict[pair]
+        z_values += list(std_score[use])
+    z_thr = BH_threshold(z_values)
+
+    # second, determine peak z value and check if above threshold
+    all_score_max, all_timelag_max = [], []
+    for pair in pairs:
+        use = timelags > offset(pair) + minimal_synapse_delay
+        std_score = std_score_dict[pair]
+        try:
+            index_max = np.argmax(std_score[use])
+            timelag_max = timelags[use][index_max]
+            score_max = std_score[use][index_max]
+        except ValueError:  # ValueError: attempt to get argmax of an empty sequence
+            score_max = 0
+        if score_max > z_thr:   # looking at positive peaks only
+            all_score_max.append((pair, score_max))
+            all_timelag_max.append((pair, timelag_max))
             logging.info(("Timeseries %d->%d" % pair) +
-                         (": max z = %f at %f s"  % (score_max[index_largest_peak], timelag_max[index_largest_peak])))
-            all_score_max.append((pair, score_max[index_largest_peak]))
-            all_timelag_max.append((pair, timelag_max[index_largest_peak]))
-            all_timelag_start.append((pair, timelag_start[index_largest_peak]))
-            all_timelag_end.append((pair, timelag_end[index_largest_peak]))
+                         (": max z = %f at %f s" % (score_max, timelag_max)))
         else:
             logging.info(("Timeseries %d->%d" % pair) + ': no peak (above threshold)')
-    return dict(all_score_max), dict(all_timelag_max), dict(all_timelag_start), dict(all_timelag_end)
 
+    logging.info('FDR correction %d --> %d with z>%f' % (len(std_score_dict), len(all_score_max), z_thr))
+
+    return dict(all_score_max), dict(all_timelag_max), z_thr
+
+
+def BH_threshold(z_values):
+    """
+    Threshold for standard scores by the Benjamini-Hochberg procedure.
+    :param z_values: standard scores
+    :return: z_threshold: for absolute value of the standard scores, that is abs(z)>z_threshold
+    """
+    abs_z_values = np.abs(z_values)
+    p_values = erfc(abs_z_values / np.sqrt(2))
+    FDR = 1 / p_values.size
+    rejected, p_values_corrected = fdrcorrection(p_values, alpha=FDR, method='indep', is_sorted=False)
+    z_thr = min(abs_z_values[rejected == True])
+    return z_thr
 
