@@ -119,7 +119,7 @@ def plot_std_score_and_peaks(axis, timelags, std_score, thr=10, peak=None, loc=1
     if thr is not None:
         axis.hlines(thr, np.min(timelags), np.max(timelags), colors='k', linestyles='dashed', label=r'threshold, $\zeta=$%1.1f' % thr)
     if peak is not None:
-            axis.vlines(peak, thr, np.max(std_score), colors='r', linewidth=4, label='peak')
+        axis.vlines(peak, thr, std_score[timelags==peak], colors='r', linewidth=4, label='peak')
     if loc>0:
         axis.legend(loc=loc)
 
