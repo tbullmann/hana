@@ -151,15 +151,17 @@ def all_peaks (timelags, std_score_dict, structural_delay_dict=None, minimal_syn
     z_values = list()
     for pair in pairs:
         use = timelags > offset(pair)
-        std_score = std_score_dict[pair]
-        z_values += list(std_score[use])
+        if pair in std_score_dict:
+            std_score = std_score_dict[pair]
+            z_values += list(std_score[use])
     z_thr = BH_threshold(z_values)
 
     # second, determine peak z value and check if above threshold
     all_score_max, all_timelag_max = [], []
     for pair in pairs:
         use = timelags > offset(pair) + minimal_synapse_delay
-        std_score = std_score_dict[pair]
+        if pair in std_score_dict:
+            std_score = std_score_dict[pair]
         try:
             index_max = np.argmax(std_score[use])
             timelag_max = timelags[use][index_max]
