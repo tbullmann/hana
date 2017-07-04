@@ -32,8 +32,14 @@ def sawtooth(timeseries, dtype = np.float32):
 def timelag_by_sawtooth (timeseries1, timeseries2):
     """Returns for each event in the first time series the time lags for the event in the second time series
     that precedes, succeeds. Both time series must be sorted in increasing values. Faster than timelag_by_for_loop."""
-    preceding_time_lags = - np.interp(np.flipud(-timeseries1), *sawtooth(-np.flipud(timeseries2)), left=np.nan, right=np.nan)
-    succeeding_time_lags = np.interp(timeseries1, *sawtooth(timeseries2), left=np.nan, right=np.nan)
+    try:
+        preceding_time_lags = - np.interp(np.flipud(-timeseries1), *sawtooth(-np.flipud(timeseries2)), left=np.nan, right=np.nan)
+    except ValueError:
+        preceding_time_lags = []
+    try:
+        succeeding_time_lags = np.interp(timeseries1, *sawtooth(timeseries2), left=np.nan, right=np.nan)
+    except ValueError:
+        succeeding_time_lags = []
     time_lags =  np.sort(np.hstack([preceding_time_lags, succeeding_time_lags]))
     valid_time_lags = (np.ma.fix_invalid(time_lags))
     return np.ma.compressed(valid_time_lags)
