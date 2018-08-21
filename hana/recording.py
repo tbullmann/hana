@@ -139,7 +139,7 @@ def electrode_neighborhoods(mea='hidens', neighborhood_radius=None, x=None, y=No
         pos = load_positions(mea=mea)
         if not neighborhood_radius:
             neighborhood_radius = HIDENS_NEIGHBORHOOD_RADIUS
-        maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS * (neighborhood_radius/HIDENS_NEIGHBORHOOD_RADIUS) ** 2
+        # maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS * (neighborhood_radius/HIDENS_NEIGHBORHOOD_RADIUS) ** 2
 
     if not x==None:     # TODO: clean up maybe by refactoring load_positions to yield x and y separately
         pos_as_array = np.asarray(zip(x, y))
@@ -149,7 +149,7 @@ def electrode_neighborhoods(mea='hidens', neighborhood_radius=None, x=None, y=No
     distances = squareform(pdist(pos_as_array, metric='euclidean'))
     neighbors = distances < neighborhood_radius
     sum_neighbors = sum(neighbors)
-    assert (max(sum_neighbors)) <= maximum_neighbors  # sanity check
+    # assert (max(sum_neighbors)) <= maximum_neighbors  # sanity check
     return neighbors
 
 
