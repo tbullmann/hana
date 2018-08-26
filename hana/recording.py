@@ -127,7 +127,7 @@ def find_peaks(V, t, negative_peaks=True):
     return delay
 
 
-def electrode_neighborhoods(mea='hidens', neighborhood_radius=None, x=None, y=None):
+def electrode_neighborhoods(mea='hidens', neighborhood_radius=HIDENS_NEIGHBORHOOD_RADIUS, x=None, y=None):
     """
     Calculate neighbor matrix from distances between electrodes.
     :param mea: (optional) type of the micro electrode array, default: 'hidens'
@@ -135,22 +135,32 @@ def electrode_neighborhoods(mea='hidens', neighborhood_radius=None, x=None, y=No
     :param x, y: (optional) electrode coordinates
     :return: neighbors: square matrix
     """
-    if mea=='hidens':
-        pos = load_positions(mea=mea)
-        if not neighborhood_radius:
-            neighborhood_radius = HIDENS_NEIGHBORHOOD_RADIUS
-        # maximum_neighbors = HIDENS_MAXIMUM_NEIGHBORS * (neighborhood_radius/HIDENS_NEIGHBORHOOD_RADIUS) ** 2
 
-    if not x==None:     # TODO: clean up maybe by refactoring load_positions to yield x and y separately
+    distances = electrode_distances(mea, x, y)
+
+    neighbors = distances < neighborhood_radius
+
+    return neighbors
+
+
+def electrode_distances(mea='hidens', x=None, y=None):
+    """
+        Calculate all distances between electrodes.
+        :param mea: (optional) type of the micro electrode array, default: 'hidens'
+        :param neighborhood_radius:(optional) depends on mea type
+        :param x, y: (optional) electrode coordinates
+        :return: neighbors: square matrix
+    """
+
+    if not x == None:  # TODO: clean up maybe by refactoring load_positions to yield x and y separately
         pos_as_array = np.asarray(zip(x, y))
     else:
+        if mea == 'hidens':
+            pos = load_positions(mea=mea)
         pos_as_array = np.asarray(zip(pos.x, pos.y))
-
     distances = squareform(pdist(pos_as_array, metric='euclidean'))
-    neighbors = distances < neighborhood_radius
-    sum_neighbors = sum(neighbors)
-    # assert (max(sum_neighbors)) <= maximum_neighbors  # sanity check
-    return neighbors
+
+    return distances
 
 
 def load_traces(filename):

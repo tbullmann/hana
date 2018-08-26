@@ -14,17 +14,24 @@ MIN_AXON_ELECTRODES = 7  # The axon should cover at least one neighborhood of el
 MAX_AXON_ELECTRODES = 5000  # Not more than half of all electrodes could be a neuron
 
 
-def extract_all_compartments(neurons, template):
+def extract_all_compartments(neurons, template, dendrite_radius=300):
     """
     Read the specified neurons from the files and extract their compartments.
     :param neurons: list of neuron indicies.
     :param template: input filename with format string for the indexing, e.g. 'data/neuron%d.h5'
+    :param dendrite_radius: if provided, all dendrites are assumed to be circular,
+                            i.e. all electrodes within the dendrite_radius around axon initial segment (AIS)
     :return:
     """
 
     # Load electrode coordinates and calculate neighborhood
     # pos = load_positions(mea='hidens')
     neighbors = electrode_neighborhoods(mea='hidens')
+
+    # Dendrites = electrodes within dendrite_radius around the AIS
+    if dendrite_radius:
+        dendrites = electrode_neighborhoods(mea='hidens', neighborhood_radius=dendrite_radius)
+
 
     # Initialize dictionaries
     extracted_neurons = []
@@ -40,6 +47,11 @@ def extract_all_compartments(neurons, template):
 
         axon, dendrite, axonal_delay, dendrite_return_current, index_AIS, number_axon_electrodes, \
         number_dendrite_electrodes = extract_compartments(t, V, neighbors)
+
+        if dendrite_radius:
+            dendrite = dendrites[index_AIS]
+            dendrite_return_current= 50 * dendrite
+            logging.info('Override dendrites with %d electrodes within radius %d from AIS' % (sum(dendrite), dendrite_radius) )
 
         if number_dendrite_electrodes> MIN_DENDRITE_ELECTRODES \
                 and number_axon_electrodes>MIN_AXON_ELECTRODES and number_axon_electrodes<MAX_AXON_ELECTRODES:
