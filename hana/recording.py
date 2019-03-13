@@ -157,7 +157,7 @@ def electrode_distances(mea='hidens', x=None, y=None):
     else:
         if mea == 'hidens':
             pos = load_positions(mea=mea)
-        pos_as_array = np.asarray(zip(pos.x, pos.y))
+        pos_as_array = np.array(list(zip(pos.x, pos.y)))  #np.asarray(zip(...)) gives zip object in Python3
     distances = squareform(pdist(pos_as_array, metric='euclidean'))
 
     return distances
@@ -190,6 +190,7 @@ def get_variable(file, key): return np.array(file[key] if key in file.keys() els
 def load_timeseries(filename, neurons='all'):
     """Load time series as a dictionary indexed by neuron from hdf5 file"""
     timeseries = load_dict_from_hdf5(filename)
+    # print(timeseries)
     if neurons is not 'all':
         timeseries = {neuron: timeseries[neuron] for neuron in neurons}
     return timeseries

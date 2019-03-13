@@ -78,7 +78,7 @@ def plot_neuron_id(ax, neuron_dict, neuron_pos):
 
 def plot_neuron_points(ax, neuron_dict, neuron_pos):
     for neuron in neuron_dict:
-        ax.scatter(neuron_pos.x[neuron], neuron_pos.y[neuron], s=18, marker='o', color='k')
+        ax.scatter(neuron_pos.x[neuron], neuron_pos.y[neuron], s=18, marker='o', color='k', zorder=10)
 
 
 def plot_network(ax, pair_dict, pos, color='k'):

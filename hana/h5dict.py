@@ -12,7 +12,7 @@ def save_dict_to_hdf5(dic, filename):
         recursively_save_dict_contents_to_group(h5file, '/', dic)
 
 def maybe_convert_to_string(key):
-    return str(key) if not isinstance(key, basestring) else key
+    return str(key) if not isinstance(key, str) else key
 
 def maybe_convert_to_int(key):
     return int(key) if key.isdigit() else key
