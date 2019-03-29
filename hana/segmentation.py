@@ -10,8 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 MIN_DENDRITE_ELECTRODES = 0  # The dendrite signal should be seen at least on one electrode
-# MIN_AXON_ELECTRODES = 7  # The axon should cover at least one neighborhood of electrodes
-MIN_AXON_ELECTRODES = 50  # The axon should cover at least 16*3+2=50 electrodes, 16 electrodes = approx. 300 um length
+MIN_AXON_ELECTRODES = 7  # The axon should cover at least one neighborhood of electrodes
 MAX_AXON_ELECTRODES = 5000  # Not more than half of all electrodes could be a neuron
 
 
