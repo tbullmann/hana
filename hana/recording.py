@@ -107,11 +107,30 @@ def neighborhood_statistics(delay, neighbors, ddof=1):
     """
     # Calculate mean delay, and std_delay
     sum_neighbors = sum(neighbors)
-    mean_delay = np.divide(np.dot(delay, neighbors), sum_neighbors)
-    diff_delay = delay - mean_delay
+    average_delay = np.divide(np.dot(delay, neighbors), sum_neighbors)
+    
+    # # Estimate using median
+    # neightbor_delays = np.repeat(delay[:,np.newaxis], len(delay), axis=1)
+    # neightbor_delays[np.logical_not(neighbors)] = np.nan
+    # average_delay = np.nanmedian(neightbor_delays, axis=0)
+    
+    diff_delay = delay - average_delay
+
+    # Original estimation using square root of mean squares
     var_delay = np.divide(np.dot(np.power(diff_delay, 2), neighbors), sum_neighbors - ddof)
     std_delay = np.sqrt(var_delay)
-    return mean_delay, std_delay
+
+    # # Estimate standard deviation using median absolute difference and std = mad * 1.4826
+    # neightbor_diff_delays = np.repeat(diff_delay[:,np.newaxis], len(diff_delay), axis=1)
+    # neightbor_diff_delays[np.logical_not(neighbors)] = np.nan
+    # est_std_delay = np.nanmedian(np.abs(neightbor_diff_delays), axis=0) * 1.4826
+
+    # print(neightbor_delays.shape)
+    # print ('std', std_delay)
+    # print ('mad', est_std_delay)
+    # print ('----')
+
+    return average_delay, std_delay
 
 
 def find_peaks(V, t, negative_peaks=True):
