@@ -78,6 +78,13 @@ def extract_compartments(t, V, neighbors):
     :param neighbors: adjacency matrix of the electrodes
     """
     index_AIS = find_AIS(V)
+    # TODO segment_AIS with delay_AIS wich must be returned for recalculation of spike timings
+    # implementation
+    # index_AIS, delay_AIS = find_AIS (t, V)
+    # ..
+    # return axon, dendrite, axonal_delay, dendrite_return_current, index_AIS, delay_AIS, number_axon_electrodes, number_dendrite_electrodes
+
+
     axonal_delay = segment_axon(t, V, neighbors)
     axon = np.isfinite(axonal_delay)
     dendrite_return_current = segment_dendrite(t, V, neighbors)
@@ -215,7 +222,10 @@ def segment_axon_verbose(t, V, neighbors):
     expected_std_delay = mean_std_for_random_delays(delay)
     thr = find_valley(std_delay, expected_std_delay)
     valid_delay = std_delay < thr
-    positive_delay = mean_delay > delay[index_AIS]
+    # axonal delays in respect to the AIS delay !
+    AIS_delay = delay[index_AIS]
+    mean_delay = mean_delay - AIS_delay
+    positive_delay = mean_delay > 0
     axon = np.multiply(positive_delay, valid_delay)
     return delay, mean_delay, std_delay, expected_std_delay, thr, valid_delay, index_AIS, positive_delay, axon
 
