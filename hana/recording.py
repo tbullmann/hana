@@ -171,7 +171,7 @@ def electrode_distances(mea='hidens', x=None, y=None):
         :return: neighbors: square matrix
     """
 
-    if not x == None:  # TODO: clean up maybe by refactoring load_positions to yield x and y separately
+    if x is not None:  # TODO: clean up maybe by refactoring load_positions to yield x and y separately
         pos_as_array = np.asarray(zip(x, y))
     else:
         if mea == 'hidens':
