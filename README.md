@@ -1,10 +1,24 @@
 # hana: high density micro electrode array recordings analysis
 
+![HDMEA](hidens.png)
+
 Hana is a Python library for analysing recordings made by high density micro electrode array.
 
-If you use this library in your research, please cite:
+If you use this library in your research, please cite our paper ([Frontiers](???)):
 
-> Bullmann T, et al. Network analysis of high-density microelectrode recordings (????) ????
+> Bullmann T, Radivojevic M, Huber S, Deligkaris K, Hierlemann A, Frey U (2019) Large-scale mapping of axonal arbors using high-density microelectrode arrays. _Accepted_
+
+```bib
+@article {Bullmann2019b,
+	author = {Torsten Bullmann, Milos Radivojevic, Stefan Huber, Kosmas Deligkaris, Andreas Reinhold Hierlemann, Urs Frey},
+	title = {Large-scale mapping of axonal arbors using high-density microelectrode arrays},
+	year = {2019},
+	doi = {},
+	URL = {},
+	eprint = {},
+	journal = {Frontiers in Cellular Neuroscience, section Cellular Neurophysiology}
+}
+```
 
 ## Disclaimer
 
@@ -12,13 +26,13 @@ The h4dict code was posted by a unknown user [hjpaul](http://codereview.stackexc
 
 ## Requirements
 
-Hana requires Python 2.7 to run, but is compatible to Pyhton 3.5. 
+Hana requires Python 2.7 to run, but might be compatible to Pyhton 3.5.
 For a full list of dependencies, see the [`requirements.txt`](requirements.txt) file.
-
+An example conda environment can be found in the [`environment.yaml`](environment.yaml) file
 
 ## Installation
 
-See installation instruction for the [hdmea](../README.md) package.
+See installation instruction for the [hdmea_axons](https://github.com/tbullmann/hdmea_axon) package.
 
 ## Components
 
