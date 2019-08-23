@@ -2,7 +2,7 @@
 
 ![HDMEA](hidens.png)
 
-Hana is a Python library for analysing recordings made by high density micro electrode array.
+Hana is a Python library for analysing recordings made by the "hidens" high density micro electrode arrays.
 
 If you use this library in your research, please cite our paper ([Frontiers](???)):
 
@@ -20,10 +20,6 @@ If you use this library in your research, please cite our paper ([Frontiers](???
 }
 ```
 
-## Disclaimer
-
-The h4dict code was posted by a unknown user [hjpaul](http://codereview.stackexchange.com/users/27783/hpaulj) on stackexchange, and the original can be found [here](http://codereview.stackexchange.com/questions/120802/recursively-save-python-dictionaries-to-hdf5-files-using-h5py)
-
 ## Requirements
 
 Hana requires Python 2.7 to run, but might be compatible to Pyhton 3.5.
@@ -33,6 +29,12 @@ An example conda environment can be found in the [`environment.yaml`](environmen
 ## Installation
 
 See installation instruction for the [hdmea_axons](https://github.com/tbullmann/hdmea_axon) package.
+
+## Usage
+
+1. [hdmea_axons](https://github.com/tbullmann/hdmea_axon).
+2. [hdmea_networks](https://github.com/tbullmann/hdmea_networks).
+
 
 ## Components
 
@@ -47,4 +49,8 @@ See installation instruction for the [hdmea_axons](https://github.com/tbullmann/
 * [Miscellaneous](misc.py)
 * [General plotting functions](plotting.py)
 * [Hexagonal grid conversions](grid.py)
-* [HDF5 for dictrionaries](h5dict.py)
+* [HDF5 for dictionaries](h5dict.py)
+
+## Acknowledgement
+
+The h4dict code was posted by a unknown user [hjpaul](http://codereview.stackexchange.com/users/27783/hpaulj) on stackexchange, and the original can be found [here](http://codereview.stackexchange.com/questions/120802/recursively-save-python-dictionaries-to-hdf5-files-using-h5py)
