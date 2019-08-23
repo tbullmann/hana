@@ -32,8 +32,8 @@ See installation instruction for the [hdmea_axons](https://github.com/tbullmann/
 
 ## Usage
 
-1. [hdmea_axons](https://github.com/tbullmann/hdmea_axon).
-2. [hdmea_networks](https://github.com/tbullmann/hdmea_networks).
+1. [hdmea_axon](https://github.com/tbullmann/hdmea_axon).
+2. [hdmea_network](https://github.com/tbullmann/hdmea_network).
 
 
 ## Components
